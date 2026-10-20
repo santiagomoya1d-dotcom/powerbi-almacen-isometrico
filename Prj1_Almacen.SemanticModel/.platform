@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Prj1_Almacen"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "d733e70b-0fa8-440b-b6e1-459603a4abdd"
+  }
+}

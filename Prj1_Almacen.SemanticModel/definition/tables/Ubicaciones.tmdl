@@ -1,0 +1,73 @@
+table Ubicaciones
+	lineageTag: 9fc7d738-383a-42be-acb2-7dc32f7df766
+
+	column UbicacionID
+		dataType: string
+		lineageTag: daad4ba5-7150-46c4-85f4-f27b8f3bd0b6
+		sourceColumn: UbicacionID
+
+	column Pasillo
+		dataType: string
+		lineageTag: 6ce44cf0-ddb1-4370-98a3-baa43471baf5
+		sourceColumn: Pasillo
+
+	column 'Orden pasillo'
+		dataType: int64
+		isHidden
+		lineageTag: 043ea5fd-44bb-4a5a-bef6-3c271fd82b72
+		summarizeBy: none
+		sourceColumn: Orden pasillo
+
+	column Hueco
+		dataType: int64
+		lineageTag: dd3a97f2-8b2b-4040-9e91-3ea0052ec0c9
+		summarizeBy: none
+		sourceColumn: Hueco
+
+	column Nivel
+		dataType: int64
+		lineageTag: 16158373-e8fb-4604-9af9-4c9539006a7c
+		summarizeBy: none
+		sourceColumn: Nivel
+
+	column Posición
+		dataType: int64
+		lineageTag: ff614b29-394f-4ee6-acff-431ca14553df
+		summarizeBy: none
+		sourceColumn: Posición
+
+	column ZonaID
+		dataType: string
+		isHidden
+		lineageTag: 5847dc41-0ca2-448e-8199-ece501f20ba7
+		sourceColumn: ZonaID
+
+	column X
+		dataType: double
+		lineageTag: 6b05960c-4365-4b36-a14c-bb041d7d2d5d
+		summarizeBy: none
+		sourceColumn: X
+
+	column Y
+		dataType: double
+		lineageTag: c7d3229e-f93e-43a5-9600-7ce8fc644ab1
+		summarizeBy: none
+		sourceColumn: Y
+
+	column Z
+		dataType: double
+		lineageTag: 129eb862-f2cf-4562-b5ae-d6e1876f93b0
+		summarizeBy: none
+		sourceColumn: Z
+
+	partition Ubicaciones = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents(CarpetaDatos & "Ubicaciones.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"UbicacionID", type text}, {"Pasillo", type text}, {"Orden pasillo", Int64.Type}, {"Hueco", Int64.Type}, {"Nivel", Int64.Type}, {"Posición", Int64.Type}, {"ZonaID", type text}, {"X", type number}, {"Y", type number}, {"Z", type number}}, "en-US")
+				in
+				    Tipos
+

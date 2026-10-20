@@ -1,0 +1,12 @@
+# Power BI: configuración local y caché de datos (se regenera con «Actualizar»)
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+
+# Python
+__pycache__/
+*.pyc
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store

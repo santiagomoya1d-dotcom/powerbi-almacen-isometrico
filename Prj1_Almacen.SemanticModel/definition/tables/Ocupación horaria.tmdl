@@ -1,0 +1,38 @@
+table 'Ocupación horaria'
+	lineageTag: 8890d71f-05a0-44a8-a8c2-f2f3508c89c8
+
+	column Fecha
+		dataType: dateTime
+		isHidden
+		lineageTag: 774ab5df-60bf-4568-a993-a8b73f00aec1
+		sourceColumn: Fecha
+
+	column Hora
+		dataType: int64
+		isHidden
+		lineageTag: b30728c6-04d3-4d2f-866f-4e5430802681
+		summarizeBy: none
+		sourceColumn: Hora
+
+	column Pasillo
+		dataType: string
+		isHidden
+		lineageTag: 70301ebb-e4a6-40b8-b52c-42701860d870
+		sourceColumn: Pasillo
+
+	column Ocupadas
+		dataType: int64
+		lineageTag: d87c904f-9583-4046-842c-194105b95219
+		sourceColumn: Ocupadas
+
+	partition 'Ocupación horaria' = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents(CarpetaDatos & "OcupacionHoraria.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"Fecha", type date}, {"Hora", Int64.Type}, {"Pasillo", type text}, {"Ocupadas", Int64.Type}}, "en-US")
+				in
+				    Tipos
+

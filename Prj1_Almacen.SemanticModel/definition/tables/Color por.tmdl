@@ -1,0 +1,27 @@
+/// Selector del color de los palets en el almacén isométrico
+table 'Color por'
+	lineageTag: 27e9317d-9809-4961-9efd-837c5dcea9d3
+
+	column 'Color por'
+		lineageTag: b47bb184-276e-48e6-b6ea-c092328c80cf
+		isNameInferred
+		sourceColumn: [Color por]
+		sortByColumn: Orden
+
+	column Clave
+		isHidden
+		lineageTag: 401e9632-f166-43e4-bad2-39f30c2a2d20
+		isNameInferred
+		sourceColumn: [Clave]
+
+	column Orden
+		isHidden
+		lineageTag: 27c0bfb1-ecb0-4a22-be75-800514728436
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Orden]
+
+	partition 'Color por' = calculated
+		mode: import
+		source = DATATABLE ( "Color por", STRING, "Clave", STRING, "Orden", INTEGER, { { "ABC", "abc", 1 }, { "Días", "dias", 2 }, { "Categoría", "categoria", 3 } } )
+

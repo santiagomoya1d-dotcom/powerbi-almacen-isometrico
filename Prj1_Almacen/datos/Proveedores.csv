@@ -1,0 +1,21 @@
+ProveedorID,Proveedor,Categoría,Plazo de entrega (días)
+PRV-01,Proveedor 01 · Bebidas,Bebidas,1
+PRV-02,Proveedor 02 · Bebidas,Bebidas,2
+PRV-03,Proveedor 03 · Bebidas,Bebidas,2
+PRV-04,Proveedor 04 · Alimentación,Alimentación,1
+PRV-05,Proveedor 05 · Alimentación,Alimentación,3
+PRV-06,Proveedor 06 · Alimentación,Alimentación,1
+PRV-07,Proveedor 07 · Alimentación,Alimentación,1
+PRV-08,Proveedor 08 · Droguería,Droguería,1
+PRV-09,Proveedor 09 · Droguería,Droguería,1
+PRV-10,Proveedor 10 · Droguería,Droguería,3
+PRV-11,Proveedor 11 · Higiene y belleza,Higiene y belleza,1
+PRV-12,Proveedor 12 · Higiene y belleza,Higiene y belleza,3
+PRV-13,Proveedor 13 · Higiene y belleza,Higiene y belleza,3
+PRV-14,Proveedor 14 · Mascotas,Mascotas,2
+PRV-15,Proveedor 15 · Mascotas,Mascotas,1
+PRV-16,Proveedor 16 · Bazar y hogar,Bazar y hogar,3
+PRV-17,Proveedor 17 · Bazar y hogar,Bazar y hogar,1
+PRV-18,Proveedor 18 · Bazar y hogar,Bazar y hogar,3
+PRV-19,Proveedor 19 · Temporada Navidad,Temporada Navidad,2
+PRV-20,Proveedor 20 · Temporada Navidad,Temporada Navidad,2

@@ -1,0 +1,36 @@
+/// Centro de distribución ficticio: un año de operación simulada palet a palet. Todos los datos son inventados.
+model Model
+	culture: es-ES
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: es-ES
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["MCP-PBIModeling","DevMode"]
+
+ref table Horas
+ref table Movimientos
+ref table Calendario
+ref table Zonas
+ref table Pasillos
+ref table Ubicaciones
+ref table Productos
+ref table Proveedores
+ref table Destinos
+ref table Muelles
+ref table Operarios
+ref table Camiones
+ref table 'Stock diario'
+ref table 'Ocupación horaria'
+ref table Medidas
+ref table 'Palets extra por día'
+ref table 'Color por'
+ref table 'Fila en foco'
+
+ref cultureInfo es-ES
+

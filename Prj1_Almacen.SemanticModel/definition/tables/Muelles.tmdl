@@ -1,0 +1,49 @@
+table Muelles
+	lineageTag: 4e2f7c4d-72cd-4f67-8b9b-ffdece9b3639
+
+	column MuelleID
+		dataType: string
+		lineageTag: 816677f3-18d7-4f03-b52a-c16a85d0c9fc
+		sourceColumn: MuelleID
+
+	column Muelle
+		dataType: string
+		lineageTag: fc8317e2-f788-4172-adb8-fb97e0d35d08
+		sourceColumn: Muelle
+		sortByColumn: Orden
+
+	column Tipo
+		dataType: string
+		lineageTag: 80224c19-8c6a-4409-87de-51d33b5c5e6b
+		sourceColumn: Tipo
+
+	column Orden
+		dataType: int64
+		isHidden
+		lineageTag: 9b824a86-0ac7-42db-8210-b2fff431b689
+		summarizeBy: none
+		sourceColumn: Orden
+
+	column X
+		dataType: double
+		lineageTag: 53a2d4ac-0c71-4541-abad-56b9cabbce7a
+		summarizeBy: none
+		sourceColumn: X
+
+	column Y
+		dataType: double
+		lineageTag: 7c91fa5f-97c6-4804-8f0a-a32596a287a9
+		summarizeBy: none
+		sourceColumn: Y
+
+	partition Muelles = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents(CarpetaDatos & "Muelles.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"MuelleID", type text}, {"Muelle", type text}, {"Tipo", type text}, {"Orden", Int64.Type}, {"X", type number}, {"Y", type number}}, "en-US")
+				in
+				    Tipos
+

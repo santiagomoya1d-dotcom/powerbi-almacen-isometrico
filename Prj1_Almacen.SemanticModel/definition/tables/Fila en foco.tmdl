@@ -1,0 +1,27 @@
+/// Selector del modo corte del almacén isométrico: las filas que quedan delante de la elegida se dibujan transparentes.
+table 'Fila en foco'
+	lineageTag: 09e6c67e-78e2-4c84-bef9-c27e0968d20b
+
+	column Fila
+		lineageTag: 854039a8-8032-430a-b0d3-2339c37de2fb
+		isNameInferred
+		sourceColumn: [Fila]
+		sortByColumn: Orden
+
+	column Orden
+		isHidden
+		lineageTag: 8e9c7562-c96c-4ad0-a7fc-d71dd25d485c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Orden]
+
+	column Clave
+		isHidden
+		lineageTag: 33bf1447-0fb9-4db5-8f5b-e55ce02789de
+		isNameInferred
+		sourceColumn: [Clave]
+
+	partition 'Fila en foco' = calculated
+		mode: import
+		source = DATATABLE ( "Fila", STRING, "Clave", STRING, "Orden", INTEGER, { { "Todo", "Todas", 0 }, { "A", "A", 1 }, { "B", "B", 2 }, { "C", "C", 3 }, { "D", "D", 4 }, { "E", "E", 5 }, { "F", "F", 6 }, { "G", "G", 7 }, { "H", "H", 8 } } )
+

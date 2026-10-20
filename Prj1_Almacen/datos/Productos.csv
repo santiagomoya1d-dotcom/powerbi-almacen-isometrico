@@ -1,0 +1,301 @@
+SKU,Producto,Categoría,ProveedorID,Valor palet (€),Clase ABC,Demanda media (palets/día)
+SKU-69655,"Agua mineral 1,5 L · ref. 01",Bebidas,PRV-01,430,A,0.641
+SKU-52635,Agua con gas 1 L · ref. 01,Bebidas,PRV-02,410,A,9.457
+SKU-43419,Refresco de cola 2 L · ref. 01,Bebidas,PRV-03,320,A,1.094
+SKU-41839,Refresco de naranja 2 L · ref. 01,Bebidas,PRV-01,340,A,0.64
+SKU-64210,Zumo de naranja 1 L · ref. 01,Bebidas,PRV-02,300,B,0.512
+SKU-15964,Cerveza lata 33 cl · ref. 01,Bebidas,PRV-03,440,C,0.173
+SKU-70123,Cerveza sin alcohol 33 cl · ref. 01,Bebidas,PRV-01,430,A,1.448
+SKU-95005,Bebida isotónica 50 cl · ref. 01,Bebidas,PRV-02,270,A,2.431
+SKU-19175,"Té frío al limón 1,5 L · ref. 01",Bebidas,PRV-03,290,B,0.522
+SKU-38214,"Gaseosa 1,5 L · ref. 01",Bebidas,PRV-01,420,A,2.618
+SKU-41699,"Agua mineral 1,5 L · ref. 02",Bebidas,PRV-02,290,B,0.438
+SKU-95902,Agua con gas 1 L · ref. 02,Bebidas,PRV-03,320,C,0.083
+SKU-98915,Refresco de cola 2 L · ref. 02,Bebidas,PRV-01,410,B,0.255
+SKU-94461,Refresco de naranja 2 L · ref. 02,Bebidas,PRV-02,290,C,0.17
+SKU-39331,Zumo de naranja 1 L · ref. 02,Bebidas,PRV-03,410,B,0.372
+SKU-66499,Cerveza lata 33 cl · ref. 02,Bebidas,PRV-01,380,A,0.916
+SKU-36763,Cerveza sin alcohol 33 cl · ref. 02,Bebidas,PRV-02,280,C,0.193
+SKU-23052,Bebida isotónica 50 cl · ref. 02,Bebidas,PRV-03,250,B,0.452
+SKU-15276,"Té frío al limón 1,5 L · ref. 02",Bebidas,PRV-01,280,B,0.598
+SKU-61450,"Gaseosa 1,5 L · ref. 02",Bebidas,PRV-02,350,C,0.235
+SKU-26921,"Agua mineral 1,5 L · ref. 03",Bebidas,PRV-03,440,C,0.197
+SKU-94961,Agua con gas 1 L · ref. 03,Bebidas,PRV-01,340,B,0.534
+SKU-13111,Refresco de cola 2 L · ref. 03,Bebidas,PRV-02,270,A,1.171
+SKU-41935,Refresco de naranja 2 L · ref. 03,Bebidas,PRV-03,250,B,0.268
+SKU-35346,Zumo de naranja 1 L · ref. 03,Bebidas,PRV-01,280,C,0.231
+SKU-43236,Cerveza lata 33 cl · ref. 03,Bebidas,PRV-02,330,B,0.425
+SKU-54276,Cerveza sin alcohol 33 cl · ref. 03,Bebidas,PRV-03,330,A,0.654
+SKU-16247,Bebida isotónica 50 cl · ref. 03,Bebidas,PRV-01,310,B,0.284
+SKU-67053,"Té frío al limón 1,5 L · ref. 03",Bebidas,PRV-02,370,B,0.351
+SKU-85779,"Gaseosa 1,5 L · ref. 03",Bebidas,PRV-03,290,B,0.389
+SKU-15367,"Agua mineral 1,5 L · ref. 04",Bebidas,PRV-01,300,C,0.165
+SKU-37269,Agua con gas 1 L · ref. 04,Bebidas,PRV-02,430,B,0.41
+SKU-89821,Refresco de cola 2 L · ref. 04,Bebidas,PRV-03,350,B,0.28
+SKU-83732,Refresco de naranja 2 L · ref. 04,Bebidas,PRV-01,360,A,2.385
+SKU-35569,Zumo de naranja 1 L · ref. 04,Bebidas,PRV-02,360,B,0.292
+SKU-23920,Cerveza lata 33 cl · ref. 04,Bebidas,PRV-03,280,A,0.773
+SKU-98970,Cerveza sin alcohol 33 cl · ref. 04,Bebidas,PRV-01,360,A,0.716
+SKU-10372,Bebida isotónica 50 cl · ref. 04,Bebidas,PRV-02,400,C,0.16
+SKU-56224,"Té frío al limón 1,5 L · ref. 04",Bebidas,PRV-03,250,C,0.14
+SKU-31811,"Gaseosa 1,5 L · ref. 04",Bebidas,PRV-01,320,B,0.314
+SKU-59086,"Agua mineral 1,5 L · ref. 05",Bebidas,PRV-02,300,A,0.95
+SKU-16971,Agua con gas 1 L · ref. 05,Bebidas,PRV-03,360,B,0.276
+SKU-32001,Refresco de cola 2 L · ref. 05,Bebidas,PRV-01,430,C,0.254
+SKU-49868,Refresco de naranja 2 L · ref. 05,Bebidas,PRV-02,320,C,0.027
+SKU-13501,Zumo de naranja 1 L · ref. 05,Bebidas,PRV-03,260,B,0.329
+SKU-54171,Cerveza lata 33 cl · ref. 05,Bebidas,PRV-01,370,A,0.669
+SKU-62082,Cerveza sin alcohol 33 cl · ref. 05,Bebidas,PRV-02,310,A,0.764
+SKU-17161,Bebida isotónica 50 cl · ref. 05,Bebidas,PRV-03,380,A,0.752
+SKU-50180,"Té frío al limón 1,5 L · ref. 05",Bebidas,PRV-01,270,B,0.353
+SKU-35306,"Gaseosa 1,5 L · ref. 05",Bebidas,PRV-02,300,B,0.39
+SKU-75954,"Agua mineral 1,5 L · ref. 06",Bebidas,PRV-03,320,A,1.125
+SKU-90033,Agua con gas 1 L · ref. 06,Bebidas,PRV-01,410,B,0.427
+SKU-52207,Refresco de cola 2 L · ref. 06,Bebidas,PRV-02,360,C,0.049
+SKU-76770,Refresco de naranja 2 L · ref. 06,Bebidas,PRV-03,370,A,1.358
+SKU-81676,Zumo de naranja 1 L · ref. 06,Bebidas,PRV-01,390,C,0.167
+SKU-98007,Cerveza lata 33 cl · ref. 06,Bebidas,PRV-02,370,A,1.937
+SKU-99949,Cerveza sin alcohol 33 cl · ref. 06,Bebidas,PRV-03,420,A,2.664
+SKU-79932,Bebida isotónica 50 cl · ref. 06,Bebidas,PRV-01,290,A,1.049
+SKU-51884,Arroz redondo 1 kg · ref. 01,Alimentación,PRV-04,760,A,1.675
+SKU-67441,Espaguetis 500 g · ref. 01,Alimentación,PRV-05,660,B,0.466
+SKU-47735,Macarrones 500 g · ref. 01,Alimentación,PRV-06,530,B,0.515
+SKU-72926,Aceite de oliva 1 L · ref. 01,Alimentación,PRV-07,760,A,1.738
+SKU-63392,Aceite de girasol 1 L · ref. 01,Alimentación,PRV-04,1090,C,0.148
+SKU-41769,Tomate triturado 400 g · ref. 01,Alimentación,PRV-05,990,C,0.123
+SKU-10161,Garbanzos cocidos 400 g · ref. 01,Alimentación,PRV-06,610,C,0.188
+SKU-28554,Galletas 800 g · ref. 01,Alimentación,PRV-07,860,B,0.292
+SKU-51289,Cereales de desayuno 500 g · ref. 01,Alimentación,PRV-04,1110,A,2.43
+SKU-76812,Leche UHT 1 L · ref. 01,Alimentación,PRV-05,1150,C,0.227
+SKU-91203,Azúcar 1 kg · ref. 01,Alimentación,PRV-06,640,A,1.187
+SKU-38230,Harina de trigo 1 kg · ref. 01,Alimentación,PRV-07,640,C,0.2
+SKU-46663,Atún en aceite 3x80 g · ref. 01,Alimentación,PRV-04,440,B,0.525
+SKU-96756,Café molido 250 g · ref. 01,Alimentación,PRV-05,1010,A,0.635
+SKU-49072,Cacao soluble 400 g · ref. 01,Alimentación,PRV-06,630,B,0.548
+SKU-63420,Arroz redondo 1 kg · ref. 02,Alimentación,PRV-07,680,A,0.681
+SKU-20226,Espaguetis 500 g · ref. 02,Alimentación,PRV-04,700,C,0.161
+SKU-60607,Macarrones 500 g · ref. 02,Alimentación,PRV-05,470,A,1.378
+SKU-46217,Aceite de oliva 1 L · ref. 02,Alimentación,PRV-06,480,A,0.857
+SKU-91268,Aceite de girasol 1 L · ref. 02,Alimentación,PRV-07,860,C,0.159
+SKU-34290,Tomate triturado 400 g · ref. 02,Alimentación,PRV-04,740,B,0.533
+SKU-78873,Garbanzos cocidos 400 g · ref. 02,Alimentación,PRV-05,660,C,0.11
+SKU-17740,Galletas 800 g · ref. 02,Alimentación,PRV-06,1030,B,0.353
+SKU-68871,Cereales de desayuno 500 g · ref. 02,Alimentación,PRV-07,570,C,0.1
+SKU-36797,Leche UHT 1 L · ref. 02,Alimentación,PRV-04,730,A,0.659
+SKU-23113,Azúcar 1 kg · ref. 02,Alimentación,PRV-05,650,A,6.228
+SKU-30462,Harina de trigo 1 kg · ref. 02,Alimentación,PRV-06,790,A,1.399
+SKU-92457,Atún en aceite 3x80 g · ref. 02,Alimentación,PRV-07,500,A,0.667
+SKU-67834,Café molido 250 g · ref. 02,Alimentación,PRV-04,1190,C,0.13
+SKU-75586,Cacao soluble 400 g · ref. 02,Alimentación,PRV-05,630,B,0.47
+SKU-53796,Arroz redondo 1 kg · ref. 03,Alimentación,PRV-06,570,A,1.05
+SKU-77027,Espaguetis 500 g · ref. 03,Alimentación,PRV-07,950,B,0.294
+SKU-39311,Macarrones 500 g · ref. 03,Alimentación,PRV-04,830,B,0.366
+SKU-24864,Aceite de oliva 1 L · ref. 03,Alimentación,PRV-05,990,C,0.059
+SKU-78661,Aceite de girasol 1 L · ref. 03,Alimentación,PRV-06,1190,C,0.137
+SKU-86411,Tomate triturado 400 g · ref. 03,Alimentación,PRV-07,950,C,0.051
+SKU-29414,Garbanzos cocidos 400 g · ref. 03,Alimentación,PRV-04,790,A,2.18
+SKU-61838,Galletas 800 g · ref. 03,Alimentación,PRV-05,650,B,0.515
+SKU-33016,Cereales de desayuno 500 g · ref. 03,Alimentación,PRV-06,870,A,0.663
+SKU-16088,Leche UHT 1 L · ref. 03,Alimentación,PRV-07,1120,B,0.262
+SKU-79009,Azúcar 1 kg · ref. 03,Alimentación,PRV-04,830,C,0.075
+SKU-40407,Harina de trigo 1 kg · ref. 03,Alimentación,PRV-05,840,B,0.383
+SKU-65811,Atún en aceite 3x80 g · ref. 03,Alimentación,PRV-06,490,C,0.17
+SKU-37267,Café molido 250 g · ref. 03,Alimentación,PRV-07,750,C,0.122
+SKU-19087,Cacao soluble 400 g · ref. 03,Alimentación,PRV-04,970,B,0.34
+SKU-32989,Arroz redondo 1 kg · ref. 04,Alimentación,PRV-05,1050,B,0.359
+SKU-20600,Espaguetis 500 g · ref. 04,Alimentación,PRV-06,1120,B,0.268
+SKU-50234,Macarrones 500 g · ref. 04,Alimentación,PRV-07,910,C,0.148
+SKU-65337,Aceite de oliva 1 L · ref. 04,Alimentación,PRV-04,1140,C,0.12
+SKU-73195,Aceite de girasol 1 L · ref. 04,Alimentación,PRV-05,440,B,0.323
+SKU-76207,Tomate triturado 400 g · ref. 04,Alimentación,PRV-06,860,A,1.091
+SKU-32923,Garbanzos cocidos 400 g · ref. 04,Alimentación,PRV-07,600,C,0.065
+SKU-62412,Galletas 800 g · ref. 04,Alimentación,PRV-04,680,C,0.167
+SKU-28797,Cereales de desayuno 500 g · ref. 04,Alimentación,PRV-05,1150,B,0.273
+SKU-52862,Leche UHT 1 L · ref. 04,Alimentación,PRV-06,940,B,0.274
+SKU-17546,Azúcar 1 kg · ref. 04,Alimentación,PRV-07,750,C,0.178
+SKU-56415,Harina de trigo 1 kg · ref. 04,Alimentación,PRV-04,1150,A,2.21
+SKU-22005,Atún en aceite 3x80 g · ref. 04,Alimentación,PRV-05,710,B,0.479
+SKU-13052,Café molido 250 g · ref. 04,Alimentación,PRV-06,1180,C,0.12
+SKU-87064,Cacao soluble 400 g · ref. 04,Alimentación,PRV-07,630,C,0.049
+SKU-52450,Arroz redondo 1 kg · ref. 05,Alimentación,PRV-04,620,B,0.271
+SKU-69174,Espaguetis 500 g · ref. 05,Alimentación,PRV-05,910,A,1.411
+SKU-24828,Macarrones 500 g · ref. 05,Alimentación,PRV-06,1140,B,0.39
+SKU-60692,Aceite de oliva 1 L · ref. 05,Alimentación,PRV-07,460,C,0.032
+SKU-36031,Aceite de girasol 1 L · ref. 05,Alimentación,PRV-04,980,C,0.081
+SKU-69292,Tomate triturado 400 g · ref. 05,Alimentación,PRV-05,730,B,0.363
+SKU-90025,Garbanzos cocidos 400 g · ref. 05,Alimentación,PRV-06,1090,A,0.935
+SKU-60223,Galletas 800 g · ref. 05,Alimentación,PRV-07,1020,B,0.37
+SKU-34937,Cereales de desayuno 500 g · ref. 05,Alimentación,PRV-04,530,B,0.373
+SKU-93949,Leche UHT 1 L · ref. 05,Alimentación,PRV-05,930,A,0.94
+SKU-42362,Azúcar 1 kg · ref. 05,Alimentación,PRV-06,1180,A,1.129
+SKU-94605,Harina de trigo 1 kg · ref. 05,Alimentación,PRV-07,510,C,0.163
+SKU-96324,Atún en aceite 3x80 g · ref. 05,Alimentación,PRV-04,1000,B,0.498
+SKU-33483,Café molido 250 g · ref. 05,Alimentación,PRV-05,480,C,0.123
+SKU-25501,Cacao soluble 400 g · ref. 05,Alimentación,PRV-06,530,C,0.109
+SKU-89256,Detergente líquido 3 L · ref. 01,Droguería,PRV-08,970,A,0.994
+SKU-81593,Detergente en cápsulas 40 uds · ref. 01,Droguería,PRV-09,810,B,0.592
+SKU-70679,Suavizante 2 L · ref. 01,Droguería,PRV-10,600,C,0.039
+SKU-77540,Lavavajillas a mano 1 L · ref. 01,Droguería,PRV-08,950,B,0.496
+SKU-47892,Pastillas lavavajillas 50 uds · ref. 01,Droguería,PRV-09,800,C,0.082
+SKU-12369,Lejía 2 L · ref. 01,Droguería,PRV-10,800,B,0.317
+SKU-68969,Limpiador multiusos 750 ml · ref. 01,Droguería,PRV-08,1000,C,0.161
+SKU-54908,Papel higiénico 12 rollos · ref. 01,Droguería,PRV-09,740,C,0.25
+SKU-34301,Papel de cocina 4 rollos · ref. 01,Droguería,PRV-10,520,C,0.228
+SKU-38670,"Fregasuelos 1,5 L · ref. 01",Droguería,PRV-08,980,B,0.311
+SKU-75314,Detergente líquido 3 L · ref. 02,Droguería,PRV-09,620,C,0.156
+SKU-60944,Detergente en cápsulas 40 uds · ref. 02,Droguería,PRV-10,800,C,0.063
+SKU-25911,Suavizante 2 L · ref. 02,Droguería,PRV-08,750,C,0.089
+SKU-17034,Lavavajillas a mano 1 L · ref. 02,Droguería,PRV-09,1040,A,0.611
+SKU-19150,Pastillas lavavajillas 50 uds · ref. 02,Droguería,PRV-10,510,A,1.371
+SKU-84516,Lejía 2 L · ref. 02,Droguería,PRV-08,640,B,0.308
+SKU-10234,Limpiador multiusos 750 ml · ref. 02,Droguería,PRV-09,720,B,0.567
+SKU-40028,Papel higiénico 12 rollos · ref. 02,Droguería,PRV-10,850,A,0.649
+SKU-72976,Papel de cocina 4 rollos · ref. 02,Droguería,PRV-08,630,C,0.062
+SKU-72487,"Fregasuelos 1,5 L · ref. 02",Droguería,PRV-09,880,C,0.038
+SKU-64471,Detergente líquido 3 L · ref. 03,Droguería,PRV-10,600,C,0.232
+SKU-12123,Detergente en cápsulas 40 uds · ref. 03,Droguería,PRV-08,1040,C,0.037
+SKU-87304,Suavizante 2 L · ref. 03,Droguería,PRV-09,1060,C,0.186
+SKU-40932,Lavavajillas a mano 1 L · ref. 03,Droguería,PRV-10,550,C,0.056
+SKU-51079,Pastillas lavavajillas 50 uds · ref. 03,Droguería,PRV-08,860,C,0.131
+SKU-64462,Lejía 2 L · ref. 03,Droguería,PRV-09,980,C,0.115
+SKU-92531,Limpiador multiusos 750 ml · ref. 03,Droguería,PRV-10,710,B,0.411
+SKU-20589,Papel higiénico 12 rollos · ref. 03,Droguería,PRV-08,910,C,0.128
+SKU-18393,Papel de cocina 4 rollos · ref. 03,Droguería,PRV-09,980,C,0.078
+SKU-26962,"Fregasuelos 1,5 L · ref. 03",Droguería,PRV-10,1010,B,0.257
+SKU-35179,Detergente líquido 3 L · ref. 04,Droguería,PRV-08,840,A,4.75
+SKU-72876,Detergente en cápsulas 40 uds · ref. 04,Droguería,PRV-09,860,B,0.4
+SKU-81584,Suavizante 2 L · ref. 04,Droguería,PRV-10,580,C,0.035
+SKU-22115,Lavavajillas a mano 1 L · ref. 04,Droguería,PRV-08,770,B,0.268
+SKU-96594,Pastillas lavavajillas 50 uds · ref. 04,Droguería,PRV-09,930,A,3.196
+SKU-11152,Lejía 2 L · ref. 04,Droguería,PRV-10,970,B,0.289
+SKU-87017,Limpiador multiusos 750 ml · ref. 04,Droguería,PRV-08,700,A,0.88
+SKU-67402,Papel higiénico 12 rollos · ref. 04,Droguería,PRV-09,670,A,0.742
+SKU-42458,Papel de cocina 4 rollos · ref. 04,Droguería,PRV-10,920,A,0.802
+SKU-81348,"Fregasuelos 1,5 L · ref. 04",Droguería,PRV-08,530,A,0.699
+SKU-27006,Detergente líquido 3 L · ref. 05,Droguería,PRV-09,620,B,0.324
+SKU-52164,Detergente en cápsulas 40 uds · ref. 05,Droguería,PRV-10,940,C,0.203
+SKU-30838,Suavizante 2 L · ref. 05,Droguería,PRV-08,900,C,0.185
+SKU-75663,Lavavajillas a mano 1 L · ref. 05,Droguería,PRV-09,980,B,0.276
+SKU-51806,Pastillas lavavajillas 50 uds · ref. 05,Droguería,PRV-10,960,B,0.375
+SKU-96225,Lejía 2 L · ref. 05,Droguería,PRV-08,990,C,0.068
+SKU-36926,Gel de ducha 750 ml · ref. 01,Higiene y belleza,PRV-11,1710,C,0.144
+SKU-73606,Champú 400 ml · ref. 01,Higiene y belleza,PRV-12,1760,A,3.306
+SKU-80909,Pasta de dientes 75 ml · ref. 01,Higiene y belleza,PRV-13,2140,C,0.208
+SKU-70372,Desodorante 200 ml · ref. 01,Higiene y belleza,PRV-11,2170,B,0.356
+SKU-13373,Pañales talla 4 · ref. 01,Higiene y belleza,PRV-12,1620,A,1.065
+SKU-30310,Toallitas húmedas 80 uds · ref. 01,Higiene y belleza,PRV-13,2250,A,0.609
+SKU-48851,Protector solar 200 ml · ref. 01,Higiene y belleza,PRV-11,930,C,0.077
+SKU-43089,Crema hidratante 400 ml · ref. 01,Higiene y belleza,PRV-12,1600,B,0.598
+SKU-50481,Jabón de manos 500 ml · ref. 01,Higiene y belleza,PRV-13,1990,A,0.642
+SKU-79559,Gel de ducha 750 ml · ref. 02,Higiene y belleza,PRV-11,1870,B,0.263
+SKU-75304,Champú 400 ml · ref. 02,Higiene y belleza,PRV-12,1550,B,0.502
+SKU-69322,Pasta de dientes 75 ml · ref. 02,Higiene y belleza,PRV-13,2370,B,0.35
+SKU-48413,Desodorante 200 ml · ref. 02,Higiene y belleza,PRV-11,1000,C,0.079
+SKU-50855,Pañales talla 4 · ref. 02,Higiene y belleza,PRV-12,1020,C,0.18
+SKU-93301,Toallitas húmedas 80 uds · ref. 02,Higiene y belleza,PRV-13,1640,B,0.322
+SKU-86619,Protector solar 200 ml · ref. 02,Higiene y belleza,PRV-11,1870,C,0.176
+SKU-42784,Crema hidratante 400 ml · ref. 02,Higiene y belleza,PRV-12,1550,B,0.541
+SKU-25689,Jabón de manos 500 ml · ref. 02,Higiene y belleza,PRV-13,2140,A,0.86
+SKU-47960,Gel de ducha 750 ml · ref. 03,Higiene y belleza,PRV-11,1930,B,0.415
+SKU-72578,Champú 400 ml · ref. 03,Higiene y belleza,PRV-12,1580,C,0.217
+SKU-11155,Pasta de dientes 75 ml · ref. 03,Higiene y belleza,PRV-13,1350,A,1.233
+SKU-12724,Desodorante 200 ml · ref. 03,Higiene y belleza,PRV-11,2090,B,0.362
+SKU-83201,Pañales talla 4 · ref. 03,Higiene y belleza,PRV-12,1680,B,0.449
+SKU-69534,Toallitas húmedas 80 uds · ref. 03,Higiene y belleza,PRV-13,2240,C,0.147
+SKU-59981,Protector solar 200 ml · ref. 03,Higiene y belleza,PRV-11,1220,C,0.254
+SKU-46835,Crema hidratante 400 ml · ref. 03,Higiene y belleza,PRV-12,2120,A,0.856
+SKU-22318,Jabón de manos 500 ml · ref. 03,Higiene y belleza,PRV-13,2020,A,0.664
+SKU-64384,Gel de ducha 750 ml · ref. 04,Higiene y belleza,PRV-11,1750,B,0.262
+SKU-38175,Champú 400 ml · ref. 04,Higiene y belleza,PRV-12,2420,B,0.318
+SKU-42217,Pasta de dientes 75 ml · ref. 04,Higiene y belleza,PRV-13,2050,B,0.385
+SKU-51916,Desodorante 200 ml · ref. 04,Higiene y belleza,PRV-11,2380,C,0.123
+SKU-42181,Pañales talla 4 · ref. 04,Higiene y belleza,PRV-12,2030,B,0.262
+SKU-21541,Toallitas húmedas 80 uds · ref. 04,Higiene y belleza,PRV-13,1360,C,0.189
+SKU-77610,Protector solar 200 ml · ref. 04,Higiene y belleza,PRV-11,1510,C,0.079
+SKU-36751,Crema hidratante 400 ml · ref. 04,Higiene y belleza,PRV-12,2310,B,0.368
+SKU-59253,Jabón de manos 500 ml · ref. 04,Higiene y belleza,PRV-13,930,B,0.273
+SKU-26050,Gel de ducha 750 ml · ref. 05,Higiene y belleza,PRV-11,2360,C,0.073
+SKU-38894,Champú 400 ml · ref. 05,Higiene y belleza,PRV-12,2410,C,0.143
+SKU-38664,Pasta de dientes 75 ml · ref. 05,Higiene y belleza,PRV-13,2240,B,0.289
+SKU-40403,Desodorante 200 ml · ref. 05,Higiene y belleza,PRV-11,1640,C,0.018
+SKU-81319,Pañales talla 4 · ref. 05,Higiene y belleza,PRV-12,1990,B,0.379
+SKU-98666,Toallitas húmedas 80 uds · ref. 05,Higiene y belleza,PRV-13,1370,B,0.412
+SKU-58492,Pienso perro adulto 15 kg · ref. 01,Mascotas,PRV-14,760,B,0.375
+SKU-96115,Pienso gato 4 kg · ref. 01,Mascotas,PRV-15,600,B,0.329
+SKU-57249,Arena para gatos 10 L · ref. 01,Mascotas,PRV-14,560,B,0.303
+SKU-34047,Comida húmeda gato 12x85 g · ref. 01,Mascotas,PRV-15,820,C,0.222
+SKU-95098,Snacks dentales perro · ref. 01,Mascotas,PRV-14,620,B,0.376
+SKU-12942,Pienso perro adulto 15 kg · ref. 02,Mascotas,PRV-15,640,A,0.789
+SKU-86855,Pienso gato 4 kg · ref. 02,Mascotas,PRV-14,600,C,0.109
+SKU-47425,Arena para gatos 10 L · ref. 02,Mascotas,PRV-15,780,A,1.709
+SKU-94682,Comida húmeda gato 12x85 g · ref. 02,Mascotas,PRV-14,550,B,0.424
+SKU-88508,Snacks dentales perro · ref. 02,Mascotas,PRV-15,530,B,0.346
+SKU-18347,Pienso perro adulto 15 kg · ref. 03,Mascotas,PRV-14,730,C,0.027
+SKU-52388,Pienso gato 4 kg · ref. 03,Mascotas,PRV-15,740,C,0.253
+SKU-93274,Arena para gatos 10 L · ref. 03,Mascotas,PRV-14,750,C,0.096
+SKU-63877,Comida húmeda gato 12x85 g · ref. 03,Mascotas,PRV-15,700,B,0.454
+SKU-40220,Snacks dentales perro · ref. 03,Mascotas,PRV-14,590,A,0.664
+SKU-86442,Pienso perro adulto 15 kg · ref. 04,Mascotas,PRV-15,830,A,0.807
+SKU-96703,Pienso gato 4 kg · ref. 04,Mascotas,PRV-14,890,C,0.216
+SKU-64310,Arena para gatos 10 L · ref. 04,Mascotas,PRV-15,540,C,0.237
+SKU-94203,Comida húmeda gato 12x85 g · ref. 04,Mascotas,PRV-14,620,B,0.395
+SKU-94996,Snacks dentales perro · ref. 04,Mascotas,PRV-15,700,C,0.031
+SKU-64006,Pienso perro adulto 15 kg · ref. 05,Mascotas,PRV-14,660,C,0.166
+SKU-29485,Pienso gato 4 kg · ref. 05,Mascotas,PRV-15,840,C,0.148
+SKU-60576,Arena para gatos 10 L · ref. 05,Mascotas,PRV-14,880,B,0.43
+SKU-57187,Comida húmeda gato 12x85 g · ref. 05,Mascotas,PRV-15,770,C,0.162
+SKU-68496,Snacks dentales perro · ref. 05,Mascotas,PRV-14,650,B,0.537
+SKU-40099,Bolsas de basura 30 L · ref. 01,Bazar y hogar,PRV-16,890,B,0.515
+SKU-63154,Papel de aluminio 30 m · ref. 01,Bazar y hogar,PRV-17,820,A,0.734
+SKU-18834,Film transparente 50 m · ref. 01,Bazar y hogar,PRV-18,1460,B,0.344
+SKU-44140,Pilas AA 8 uds · ref. 01,Bazar y hogar,PRV-16,1120,A,0.997
+SKU-59893,Bombillas LED 3 uds · ref. 01,Bazar y hogar,PRV-17,1560,C,0.085
+SKU-57746,Velas aromáticas · ref. 01,Bazar y hogar,PRV-18,1480,A,0.859
+SKU-71977,Vasos desechables 50 uds · ref. 01,Bazar y hogar,PRV-16,1790,B,0.295
+SKU-64049,Servilletas 100 uds · ref. 01,Bazar y hogar,PRV-17,1610,B,0.47
+SKU-27088,Menaje de cocina · ref. 01,Bazar y hogar,PRV-18,1690,C,0.014
+SKU-47387,Bolsas de basura 30 L · ref. 02,Bazar y hogar,PRV-16,1680,B,0.584
+SKU-19492,Papel de aluminio 30 m · ref. 02,Bazar y hogar,PRV-17,1690,B,0.302
+SKU-69517,Film transparente 50 m · ref. 02,Bazar y hogar,PRV-18,1790,A,1.612
+SKU-27537,Pilas AA 8 uds · ref. 02,Bazar y hogar,PRV-16,1050,B,0.289
+SKU-65740,Bombillas LED 3 uds · ref. 02,Bazar y hogar,PRV-17,970,C,0.09
+SKU-92385,Velas aromáticas · ref. 02,Bazar y hogar,PRV-18,1310,C,0.107
+SKU-92546,Vasos desechables 50 uds · ref. 02,Bazar y hogar,PRV-16,1600,B,0.359
+SKU-84108,Servilletas 100 uds · ref. 02,Bazar y hogar,PRV-17,810,B,0.325
+SKU-65791,Menaje de cocina · ref. 02,Bazar y hogar,PRV-18,1790,C,0.127
+SKU-67722,Bolsas de basura 30 L · ref. 03,Bazar y hogar,PRV-16,960,C,0.082
+SKU-24401,Papel de aluminio 30 m · ref. 03,Bazar y hogar,PRV-17,930,A,1.089
+SKU-52550,Film transparente 50 m · ref. 03,Bazar y hogar,PRV-18,1070,C,0.188
+SKU-56787,Pilas AA 8 uds · ref. 03,Bazar y hogar,PRV-16,600,C,0.223
+SKU-80918,Bombillas LED 3 uds · ref. 03,Bazar y hogar,PRV-17,1070,C,0.14
+SKU-84554,Velas aromáticas · ref. 03,Bazar y hogar,PRV-18,770,A,0.968
+SKU-97341,Vasos desechables 50 uds · ref. 03,Bazar y hogar,PRV-16,1560,A,0.73
+SKU-51576,Servilletas 100 uds · ref. 03,Bazar y hogar,PRV-17,1530,C,0.086
+SKU-64418,Menaje de cocina · ref. 03,Bazar y hogar,PRV-18,1350,C,0.221
+SKU-98908,Bolsas de basura 30 L · ref. 04,Bazar y hogar,PRV-16,1560,C,0.095
+SKU-57460,Papel de aluminio 30 m · ref. 04,Bazar y hogar,PRV-17,790,A,1.527
+SKU-48671,Film transparente 50 m · ref. 04,Bazar y hogar,PRV-18,910,B,0.373
+SKU-56651,Pilas AA 8 uds · ref. 04,Bazar y hogar,PRV-16,1650,C,0.181
+SKU-90839,Bombillas LED 3 uds · ref. 04,Bazar y hogar,PRV-17,1720,C,0.171
+SKU-19454,Velas aromáticas · ref. 04,Bazar y hogar,PRV-18,920,B,0.412
+SKU-99347,Vasos desechables 50 uds · ref. 04,Bazar y hogar,PRV-16,880,C,0.187
+SKU-64560,Turrón duro 300 g · ref. 01,Temporada Navidad,PRV-19,1470,C,0.097
+SKU-80806,Turrón blando 300 g · ref. 01,Temporada Navidad,PRV-20,1630,C,0.164
+SKU-42775,Polvorones 400 g · ref. 01,Temporada Navidad,PRV-19,2360,C,0.078
+SKU-43498,Mantecados surtidos 1 kg · ref. 01,Temporada Navidad,PRV-20,1410,C,0.084
+SKU-88444,Cava brut 75 cl · ref. 01,Temporada Navidad,PRV-19,2580,B,0.308
+SKU-47656,Bombones surtidos 400 g · ref. 01,Temporada Navidad,PRV-20,1530,C,0.122
+SKU-83587,Lote navideño · ref. 01,Temporada Navidad,PRV-19,2140,C,0.099
+SKU-13984,Mazapán 250 g · ref. 01,Temporada Navidad,PRV-20,1870,C,0.211
+SKU-24110,Turrón duro 300 g · ref. 02,Temporada Navidad,PRV-19,2220,C,0.225
+SKU-18220,Turrón blando 300 g · ref. 02,Temporada Navidad,PRV-20,2390,C,0.054
+SKU-80751,Polvorones 400 g · ref. 02,Temporada Navidad,PRV-19,1160,C,0.06
+SKU-30969,Mantecados surtidos 1 kg · ref. 02,Temporada Navidad,PRV-20,2130,C,0.235
+SKU-40979,Cava brut 75 cl · ref. 02,Temporada Navidad,PRV-19,1610,C,0.195
+SKU-46980,Bombones surtidos 400 g · ref. 02,Temporada Navidad,PRV-20,1480,C,0.094
+SKU-93884,Lote navideño · ref. 02,Temporada Navidad,PRV-19,2200,B,0.382
+SKU-74702,Mazapán 250 g · ref. 02,Temporada Navidad,PRV-20,1550,C,0.105
+SKU-66269,Turrón duro 300 g · ref. 03,Temporada Navidad,PRV-19,1180,C,0.017
+SKU-54439,Turrón blando 300 g · ref. 03,Temporada Navidad,PRV-20,1970,C,0.052
+SKU-74546,Polvorones 400 g · ref. 03,Temporada Navidad,PRV-19,2510,C,0.026
+SKU-68565,Mantecados surtidos 1 kg · ref. 03,Temporada Navidad,PRV-20,1960,B,0.363

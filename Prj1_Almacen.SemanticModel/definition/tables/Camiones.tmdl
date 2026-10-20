@@ -1,0 +1,88 @@
+table Camiones
+	lineageTag: 15daa95a-0a0a-4eff-91a5-57206a875137
+
+	column CamionID
+		dataType: string
+		lineageTag: 60bc60ed-b321-4826-b768-50e9a94c4efa
+		sourceColumn: CamionID
+
+	column Tipo
+		dataType: string
+		lineageTag: c2f06177-15ae-4b20-bb62-da6577230db2
+		sourceColumn: Tipo
+
+	column Fecha
+		dataType: dateTime
+		isHidden
+		lineageTag: 7536ab9b-407c-4de1-8ff7-e822c403128c
+		sourceColumn: Fecha
+
+	column MuelleID
+		dataType: string
+		isHidden
+		lineageTag: 8f4883be-f238-4374-8417-b68fb4f11ea1
+		sourceColumn: MuelleID
+
+	column ProveedorID
+		dataType: string
+		isHidden
+		lineageTag: 393659d8-107c-46c6-b33b-2b1c90fe5fbf
+		sourceColumn: ProveedorID
+
+	column DestinoID
+		dataType: string
+		isHidden
+		lineageTag: 6d98e834-ef4f-4a71-a57a-19bbf6c3b13f
+		sourceColumn: DestinoID
+
+	column 'Palets previstos'
+		dataType: int64
+		lineageTag: 6a06a91e-cbbc-4c01-a980-6286147f6372
+		sourceColumn: Palets previstos
+
+	column Palets
+		dataType: int64
+		lineageTag: d335eb11-5555-4257-8ebb-fe60f3d1cc37
+		sourceColumn: Palets
+
+	column 'Hora prevista'
+		dataType: dateTime
+		lineageTag: 7596dc08-2d9d-4c47-a463-5b29c51e93b2
+		sourceColumn: Hora prevista
+
+	column 'Hora real'
+		dataType: dateTime
+		lineageTag: 736b7088-6c50-4e49-af11-46a4921e091c
+		sourceColumn: Hora real
+
+	column 'Inicio operación'
+		dataType: dateTime
+		lineageTag: 44b7c48c-113a-4d92-ac25-90ce86cec935
+		sourceColumn: Inicio operación
+
+	column 'Fin operación'
+		dataType: dateTime
+		lineageTag: 44c1be28-4a4d-4a0f-8b38-a8a7ec32956a
+		sourceColumn: Fin operación
+
+	column 'Espera (min)'
+		dataType: double
+		lineageTag: 60fff1fc-edd5-47a0-8404-0b7743657979
+		sourceColumn: Espera (min)
+
+	column 'Retraso (min)'
+		dataType: double
+		lineageTag: d7baf5c1-4311-4e6b-93c6-9fcccb5adb84
+		sourceColumn: Retraso (min)
+
+	partition Camiones = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents(CarpetaDatos & "Camiones.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"CamionID", type text}, {"Tipo", type text}, {"Fecha", type date}, {"MuelleID", type text}, {"ProveedorID", type text}, {"DestinoID", type text}, {"Palets previstos", Int64.Type}, {"Palets", Int64.Type}, {"Hora prevista", type datetime}, {"Hora real", type datetime}, {"Inicio operación", type datetime}, {"Fin operación", type datetime}, {"Espera (min)", type number}, {"Retraso (min)", type number}}, "en-US")
+				in
+				    Tipos
+

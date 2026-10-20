@@ -1,0 +1,105 @@
+table Calendario
+	lineageTag: eaeea9b5-5de7-4a69-ab6b-e476375ce379
+	dataCategory: Time
+
+	column Fecha
+		dataType: dateTime
+		isUnique
+		formatString: dd/mm/yyyy
+		lineageTag: 582d7e56-fbdb-4334-adee-b8b5d17f16fc
+		sourceColumn: Fecha
+
+	column Año
+		dataType: int64
+		lineageTag: b68d837d-8bfd-4af4-b9c2-06dac2804b52
+		summarizeBy: none
+		sourceColumn: Año
+
+	column Mes
+		dataType: int64
+		isHidden
+		lineageTag: b5eaa033-6f8e-4bb4-aa83-238fb4ec98f9
+		summarizeBy: none
+		sourceColumn: Mes
+
+	column 'Nombre del mes'
+		dataType: string
+		lineageTag: 8a7827fb-d9da-488e-82dd-00a297c1cc94
+		sourceColumn: Nombre del mes
+		sortByColumn: Mes
+
+	column 'Mes corto'
+		dataType: string
+		lineageTag: 2972a107-cba8-46c9-93ce-e0c4ce83cd0b
+		sourceColumn: Mes corto
+		sortByColumn: Mes
+
+	column Año-mes
+		dataType: int64
+		isHidden
+		lineageTag: 3cb4c40c-31f8-4b1a-bcfd-78316f534193
+		summarizeBy: none
+		sourceColumn: Año-mes
+
+	column 'Mes y año'
+		dataType: string
+		lineageTag: b195f473-17fd-4f90-beca-ea5733883e55
+		sourceColumn: Mes y año
+		sortByColumn: Año-mes
+
+	column Trimestre
+		dataType: string
+		lineageTag: 315b1aca-1dfc-43e0-9db1-e4585c3025e1
+		sourceColumn: Trimestre
+
+	column 'Semana ISO'
+		dataType: int64
+		lineageTag: 0295c337-6eac-403e-80b3-7ee602fc838b
+		summarizeBy: none
+		sourceColumn: Semana ISO
+
+	column Día
+		dataType: int64
+		lineageTag: c46380e3-7982-4f86-828e-9045ca90d6ac
+		summarizeBy: none
+		sourceColumn: Día
+
+	column 'Día de la semana'
+		dataType: string
+		lineageTag: d24af588-6e09-45a5-8e85-76b9ba16a137
+		sourceColumn: Día de la semana
+		sortByColumn: 'Orden día semana'
+
+	column 'Orden día semana'
+		dataType: int64
+		isHidden
+		lineageTag: 7053499a-4a1d-4d67-acda-e7ff52af0926
+		summarizeBy: none
+		sourceColumn: Orden día semana
+
+	column Abierto
+		dataType: string
+		lineageTag: 65e250ea-989a-4bf7-8112-f5ff606214f4
+		sourceColumn: Abierto
+
+	column Festivo
+		dataType: string
+		lineageTag: 0ecdd1b8-cf56-41fb-ba74-05671baabd3b
+		sourceColumn: Festivo
+
+	column Temporada
+		dataType: string
+		lineageTag: 689f5762-532e-4d71-91b8-509094901a44
+		sourceColumn: Temporada
+
+	partition Calendario = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents(CarpetaDatos & "Calendario.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"Fecha", type date}, {"Año", Int64.Type}, {"Mes", Int64.Type}, {"Nombre del mes", type text}, {"Mes corto", type text}, {"Año-mes", Int64.Type}, {"Mes y año", type text}, {"Trimestre", type text}, {"Semana ISO", Int64.Type}, {"Día", Int64.Type}, {"Día de la semana", type text}, {"Orden día semana", Int64.Type}, {"Abierto", type text}, {"Festivo", type text}, {"Temporada", type text}}, "en-US")
+				in
+				    Tipos
+

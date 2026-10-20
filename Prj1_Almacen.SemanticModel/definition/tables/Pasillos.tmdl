@@ -1,0 +1,45 @@
+table Pasillos
+	lineageTag: 0bcef4a7-b83a-4d7b-9d8d-12333f298952
+
+	column Pasillo
+		dataType: string
+		lineageTag: 9fbe48e2-796e-4f05-ad24-681a433aca8d
+		sourceColumn: Pasillo
+		sortByColumn: 'Orden pasillo'
+
+	column 'Orden pasillo'
+		dataType: int64
+		isHidden
+		lineageTag: c3028ad2-d2c3-4855-a7ad-a63c9cf8e6ac
+		summarizeBy: none
+		sourceColumn: Orden pasillo
+
+	column ZonaID
+		dataType: string
+		isHidden
+		lineageTag: 205fc356-1252-4484-b2e7-64c1c94d722a
+		sourceColumn: ZonaID
+
+	column Y
+		dataType: double
+		lineageTag: 68e79026-31c9-48f6-af63-494c625dec47
+		summarizeBy: none
+		sourceColumn: Y
+
+	column 'Capacidad (palets)'
+		dataType: int64
+		lineageTag: 05d37c1d-bb52-40a5-af81-9d21b23d7425
+		summarizeBy: none
+		sourceColumn: Capacidad (palets)
+
+	partition Pasillos = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents(CarpetaDatos & "Pasillos.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"Pasillo", type text}, {"Orden pasillo", Int64.Type}, {"ZonaID", type text}, {"Y", type number}, {"Capacidad (palets)", Int64.Type}}, "en-US")
+				in
+				    Tipos
+

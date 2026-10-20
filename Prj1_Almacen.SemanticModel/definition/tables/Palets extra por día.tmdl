@@ -1,0 +1,13 @@
+/// Parámetro del simulador: palets diarios de más que entrarían en el almacén
+table 'Palets extra por día'
+	lineageTag: 377ebc9f-be14-4209-8b4e-50aec5311359
+
+	column 'Palets extra'
+		lineageTag: cf896f74-38ec-44a6-8a97-eaaf0737ff46
+		isNameInferred
+		sourceColumn: [Palets extra]
+
+	partition 'Palets extra por día' = calculated
+		mode: import
+		source = SELECTCOLUMNS ( GENERATESERIES ( 0, 100, 5 ), "Palets extra", [Value] )
+

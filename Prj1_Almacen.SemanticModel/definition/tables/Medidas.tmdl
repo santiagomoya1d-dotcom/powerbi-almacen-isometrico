@@ -1,0 +1,594 @@
+/// Tabla vacía que solo agrupa las medidas del informe
+table Medidas
+	lineageTag: 5aa8a1a1-c689-4192-9671-8ff8d36c6966
+
+	/// Final de la hora elegida en el día elegido. Sin hora elegida, el cierre del día (23:59).
+	measure 'Momento seleccionado' =
+			VAR d = [Fecha elegida]
+			VAR h = SELECTEDVALUE ( Horas[Hora], 23 )
+			RETURN d + TIME ( h, 59, 59 )
+		formatString: dd/mm/yyyy hh:nn
+		displayFolder: 1 · Momento
+		lineageTag: b9183a21-fcb4-4b7e-a918-d85949021fec
+
+	/// Palets en estantería en el momento seleccionado, reconstruidos sumando entradas y restando salidas. Por ubicación vale 1 (ocupada) o 0 (libre).
+	measure 'Palets en stock' =
+			VAR t = [Momento seleccionado]
+			RETURN
+			    COALESCE (
+			        CALCULATE (
+			            SUM ( Movimientos[Signo] ),
+			            REMOVEFILTERS ( Calendario ),
+			            REMOVEFILTERS ( Horas ),
+			            Movimientos[FechaHora] <= t
+			        ),
+			        0
+			    )
+		formatString: #,0
+		displayFolder: 1 · Momento
+		lineageTag: 5c63e16d-0db7-46db-b730-a5fbbae020da
+
+	/// Ubicaciones de palet en el filtro actual (zona, pasillo, nivel...).
+	measure 'Capacidad (palets)' = COUNTROWS ( Ubicaciones )
+		formatString: #,0
+		displayFolder: 1 · Momento
+		lineageTag: cdd0f215-bcdc-42b9-89a9-a13874e8b610
+
+	measure 'Ocupación %' = DIVIDE ( [Palets en stock], [Capacidad (palets)] )
+		formatString: 0.0%
+		displayFolder: 1 · Momento
+		lineageTag: e5f9078d-a675-4f79-9a9a-912b33b3e99b
+
+	measure 'Huecos libres' = [Capacidad (palets)] - [Palets en stock]
+		formatString: #,0
+		displayFolder: 1 · Momento
+		lineageTag: 1bf31510-3f12-4a71-b0a7-53125edc1ffd
+
+	/// Momento en que entró el palet que ocupa la ubicación (solo con una ubicación en contexto).
+	measure 'Última entrada en ubicación' =
+			VAR t = [Momento seleccionado]
+			RETURN
+			    IF (
+			        HASONEVALUE ( Ubicaciones[UbicacionID] ) && [Palets en stock] = 1,
+			        CALCULATE (
+			            MAX ( Movimientos[FechaHora] ),
+			            REMOVEFILTERS ( Calendario ),
+			            REMOVEFILTERS ( Horas ),
+			            Movimientos[FechaHora] <= t,
+			            Movimientos[Signo] = 1
+			        )
+			    )
+		formatString: dd/mm/yyyy hh:nn
+		isHidden
+		displayFolder: 1 · Momento
+		lineageTag: cd50290f-baaf-436f-b7a1-84f8f4c57862
+
+	measure 'SKU en ubicación' =
+			VAR ultima = [Última entrada en ubicación]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( ultima ),
+			        CALCULATE (
+			            MAX ( Movimientos[SKU] ),
+			            REMOVEFILTERS ( Calendario ),
+			            REMOVEFILTERS ( Horas ),
+			            Movimientos[FechaHora] = ultima,
+			            Movimientos[Signo] = 1
+			        )
+			    )
+		displayFolder: 1 · Momento
+		lineageTag: 49c94d2a-efc0-4c23-8857-46a025bcc73e
+
+	measure 'Producto en ubicación' =
+			VAR s = [SKU en ubicación]
+			RETURN IF ( NOT ISBLANK ( s ), LOOKUPVALUE ( Productos[Producto], Productos[SKU], s ) )
+		displayFolder: 1 · Momento
+		lineageTag: 20f3e871-65ca-4b39-8f96-18b23a19c5da
+
+	measure 'Clase ABC en ubicación' =
+			VAR s = [SKU en ubicación]
+			RETURN IF ( NOT ISBLANK ( s ), LOOKUPVALUE ( Productos[Clase ABC], Productos[SKU], s ) )
+		displayFolder: 1 · Momento
+		lineageTag: 3971cd6e-b2ac-4e4e-863a-5f7c980a7d32
+
+	measure 'Categoría en ubicación' =
+			VAR s = [SKU en ubicación]
+			RETURN IF ( NOT ISBLANK ( s ), LOOKUPVALUE ( Productos[Categoría], Productos[SKU], s ) )
+		displayFolder: 1 · Momento
+		lineageTag: 6c5a5ea6-2bb9-4e4a-a79c-c3b6b85360be
+
+	/// Días que lleva en estantería el palet de la ubicación.
+	measure 'Días en stock' =
+			VAR ultima = [Última entrada en ubicación]
+			RETURN IF ( NOT ISBLANK ( ultima ), ROUND ( ( [Momento seleccionado] - ultima ) * 1.0, 1 ) )
+		formatString: 0.0
+		displayFolder: 1 · Momento
+		lineageTag: a40fe972-e22b-456b-9656-3b580e682f2b
+
+	measure 'Título del momento' =
+			VAR d = [Fecha elegida]
+			VAR h = SELECTEDVALUE ( Horas[Hora], 23 )
+			VAR pista = IF ( NOT HASONEVALUE ( Calendario[Fecha] ), "  ·  pico de la campaña de Navidad, haz clic en la curva para cambiar de día" )
+			RETURN FORMAT ( d, "dddd, d ""de"" mmmm ""de"" yyyy", "es-ES" ) & " · " & FORMAT ( h, "00" ) & ":00" & pista
+		displayFolder: 1 · Momento
+		lineageTag: b9e07738-b70c-470b-bf05-bf00bc893bec
+
+	measure 'Entradas (palets)' = CALCULATE ( COUNTROWS ( Movimientos ), Movimientos[Tipo] = "Entrada" )
+		formatString: #,0
+		displayFolder: 2 · Flujos
+		lineageTag: cbb455bd-8e8e-436c-a7de-cf50586a7e20
+
+	measure 'Salidas (palets)' = CALCULATE ( COUNTROWS ( Movimientos ), Movimientos[Tipo] = "Salida" )
+		formatString: #,0
+		displayFolder: 2 · Flujos
+		lineageTag: b259a437-15fb-4bfe-98c6-852367fc51bc
+
+	measure 'Flujo neto (palets)' = [Entradas (palets)] - [Salidas (palets)]
+		formatString: +#,0;-#,0;0
+		displayFolder: 2 · Flujos
+		lineageTag: b015a37c-6d89-4096-88d0-57fed4132f73
+
+	measure 'Movimientos (palets)' = [Entradas (palets)] + [Salidas (palets)]
+		formatString: #,0
+		displayFolder: 2 · Flujos
+		lineageTag: 70ab6d92-6183-4f80-908b-e0afc6dd2bc9
+
+	/// Entradas del día elegido desde las 00:00 hasta el final de la hora elegida.
+	measure 'Entradas hasta la hora' =
+			VAR d = [Fecha elegida]
+			VAR h = SELECTEDVALUE ( Horas[Hora], 23 )
+			RETURN
+			    CALCULATE (
+			        [Entradas (palets)],
+			        REMOVEFILTERS ( Calendario ),
+			        REMOVEFILTERS ( Horas ),
+			        Calendario[Fecha] = d,
+			        Horas[Hora] <= h
+			    )
+		formatString: #,0
+		displayFolder: 2 · Flujos
+		lineageTag: ffb27e0e-ba85-41ba-97c3-90957b69cbec
+
+	/// Salidas del día elegido desde las 00:00 hasta el final de la hora elegida.
+	measure 'Salidas hasta la hora' =
+			VAR d = [Fecha elegida]
+			VAR h = SELECTEDVALUE ( Horas[Hora], 23 )
+			RETURN
+			    CALCULATE (
+			        [Salidas (palets)],
+			        REMOVEFILTERS ( Calendario ),
+			        REMOVEFILTERS ( Horas ),
+			        Calendario[Fecha] = d,
+			        Horas[Hora] <= h
+			    )
+		formatString: #,0
+		displayFolder: 2 · Flujos
+		lineageTag: 2aa939cf-45ae-45e1-afc9-f2a6968d604f
+
+	/// Media de entradas en los días abiertos del periodo.
+	measure 'Entradas por día (media)' = DIVIDE ( [Entradas (palets)], CALCULATE ( COUNTROWS ( Calendario ), KEEPFILTERS ( Calendario[Abierto] = "Sí" ) ) )
+		formatString: #,0
+		displayFolder: 2 · Flujos
+		lineageTag: 0cb63530-5101-4769-8518-66b075f74d9f
+
+	/// Media de salidas en los días abiertos del periodo.
+	measure 'Salidas por día (media)' = DIVIDE ( [Salidas (palets)], CALCULATE ( COUNTROWS ( Calendario ), KEEPFILTERS ( Calendario[Abierto] = "Sí" ) ) )
+		formatString: #,0
+		displayFolder: 2 · Flujos
+		lineageTag: 859d733a-9578-4f93-9325-2579da5491ba
+
+	measure Camiones = COUNTROWS ( Camiones )
+		formatString: #,0
+		displayFolder: 3 · Camiones
+		lineageTag: 506fa880-478e-4520-a5ac-f845178cf807
+
+	measure 'Camiones de entrada' = CALCULATE ( [Camiones], Camiones[Tipo] = "Entrada" )
+		formatString: #,0
+		displayFolder: 3 · Camiones
+		lineageTag: 62398d6a-66d9-4953-9446-e0bb48434861
+
+	measure 'Camiones de salida' = CALCULATE ( [Camiones], Camiones[Tipo] = "Salida" )
+		formatString: #,0
+		displayFolder: 3 · Camiones
+		lineageTag: 686765cf-4d1b-40d8-a9eb-5cfa0f6f0841
+
+	measure 'Palets por camión' = DIVIDE ( SUM ( Camiones[Palets] ), [Camiones] )
+		formatString: 0.0
+		displayFolder: 3 · Camiones
+		lineageTag: 68d97884-0fd6-46e5-85d4-7e43067ac6cb
+
+	measure 'Retraso medio (min)' = AVERAGE ( Camiones[Retraso (min)] )
+		formatString: 0.0
+		displayFolder: 3 · Camiones
+		lineageTag: 07cc48a8-5393-425d-8afd-b3d9de12bebb
+
+	/// Camiones con 15 minutos de retraso o menos.
+	measure 'Puntualidad %' = DIVIDE ( CALCULATE ( [Camiones], KEEPFILTERS ( Camiones[Retraso (min)] <= 15 ) ), [Camiones] )
+		formatString: 0.0%
+		displayFolder: 3 · Camiones
+		lineageTag: 1f9b7853-2969-4d06-9dcd-d8712354c827
+
+	measure 'Minutos en muelle (media)' = AVERAGEX ( Camiones, ( Camiones[Fin operación] - Camiones[Inicio operación] ) * 1440 )
+		formatString: 0
+		displayFolder: 3 · Camiones
+		lineageTag: 209094e4-ebf7-4a28-821b-5436bdfb1f41
+
+	/// Camiones que ocupan un muelle durante la hora elegida del día elegido.
+	measure 'Camiones en muelle' =
+			VAR d = [Fecha elegida]
+			VAR h = SELECTEDVALUE ( Horas[Hora], 23 )
+			VAR ini = d + TIME ( h, 0, 0 )
+			VAR fin = ini + TIME ( 1, 0, 0 )
+			RETURN
+			    CALCULATE (
+			        [Camiones],
+			        REMOVEFILTERS ( Calendario ),
+			        Camiones[Inicio operación] < fin,
+			        Camiones[Fin operación] >= ini
+			    )
+		formatString: #,0
+		displayFolder: 3 · Camiones
+		lineageTag: 0aa51d1e-bfb7-49a0-8e4f-65fdf816c248
+
+	/// Palets en stock al cierre del último día del periodo.
+	measure 'Stock al cierre (palets)' = CALCULATE ( SUM ( 'Stock diario'[Stock final (palets)] ), LASTDATE ( Calendario[Fecha] ) )
+		formatString: #,0
+		displayFolder: 4 · Inventario
+		lineageTag: 4593b82b-67b1-422b-850f-aacda9300eb7
+
+	measure 'Valor del stock (€)' = CALCULATE ( SUM ( 'Stock diario'[Valor stock (€)] ), LASTDATE ( Calendario[Fecha] ) )
+		formatString: #,0 €
+		displayFolder: 4 · Inventario
+		lineageTag: f428f112-4ac0-4b2a-8ded-077f00d6b053
+
+	measure 'Edad media del stock (días)' =
+			CALCULATE (
+			    DIVIDE (
+			        SUMX ( 'Stock diario', 'Stock diario'[Stock final (palets)] * 'Stock diario'[Edad media (días)] ),
+			        SUM ( 'Stock diario'[Stock final (palets)] )
+			    ),
+			    LASTDATE ( Calendario[Fecha] )
+			)
+		formatString: 0.0
+		displayFolder: 4 · Inventario
+		lineageTag: 4dea1246-adad-4085-919c-b96442fdd704
+
+	measure 'Demanda (palets)' = SUM ( 'Stock diario'[Demanda (palets)] )
+		formatString: #,0
+		displayFolder: 4 · Inventario
+		lineageTag: 64813c0f-98f4-4d30-ace7-7d57d9d2a1ba
+
+	measure 'Servidos (palets)' = SUM ( 'Stock diario'[Servidos (palets)] )
+		formatString: #,0
+		displayFolder: 4 · Inventario
+		lineageTag: 33c8104d-d10e-4e79-9fc2-d38c36c15802
+
+	/// Palets pedidos que no se pudieron servir por falta de stock.
+	measure 'Roturas de stock (palets)' = SUM ( 'Stock diario'[No servidos (palets)] )
+		formatString: #,0
+		displayFolder: 4 · Inventario
+		lineageTag: 71314a4a-883b-4f55-a65f-71d2a3297723
+
+	measure 'Nivel de servicio %' = DIVIDE ( [Servidos (palets)], [Demanda (palets)] )
+		formatString: 0.0%
+		displayFolder: 4 · Inventario
+		lineageTag: dcab03b8-e01f-4fe3-95f0-d4a4e9947021
+
+	/// Días de demanda que cubre el stock al cierre, con la demanda media de las últimas 4 semanas (días abiertos).
+	measure 'Cobertura (días)' =
+			VAR f = MAX ( Calendario[Fecha] )
+			VAR ventana = DATESINPERIOD ( Calendario[Fecha], f, -28, DAY )
+			VAR demanda = CALCULATE ( [Demanda (palets)], ventana )
+			VAR abiertos = CALCULATE ( COUNTROWS ( Calendario ), ventana, Calendario[Abierto] = "Sí" )
+			RETURN DIVIDE ( [Stock al cierre (palets)], DIVIDE ( demanda, abiertos ) )
+		formatString: 0.0
+		displayFolder: 4 · Inventario
+		lineageTag: c067d86e-2ded-42f4-90ab-fa1df7f2ba61
+
+	/// Ubicaciones ocupadas al final de la última hora del contexto (fotografía horaria).
+	measure 'Ubicaciones ocupadas' =
+			VAR f = MAX ( Calendario[Fecha] )
+			VAR h = MAX ( Horas[Hora] )
+			RETURN CALCULATE ( SUM ( 'Ocupación horaria'[Ocupadas] ), Calendario[Fecha] = f, Horas[Hora] = h )
+		formatString: #,0
+		displayFolder: 5 · Ocupación por hora
+		lineageTag: 2743b895-5ec1-4d90-9441-007a1584b521
+
+	measure 'Ocupación horaria %' = DIVIDE ( [Ubicaciones ocupadas], SUM ( Pasillos[Capacidad (palets)] ) )
+		formatString: 0.0%
+		displayFolder: 5 · Ocupación por hora
+		lineageTag: c416e8d4-c928-4471-9296-0a1dfdd9e300
+
+	/// Media de la ocupación al cierre de cada día del periodo.
+	measure 'Ocupación media %' = AVERAGEX ( VALUES ( Calendario[Fecha] ), CALCULATE ( [Ocupación horaria %], Horas[Hora] = 23 ) )
+		formatString: 0.0%
+		displayFolder: 5 · Ocupación por hora
+		lineageTag: 6e9b2941-0d8c-4621-aaab-2398d4b0bc22
+
+	/// Pico de ocupación hora a hora en el periodo.
+	measure 'Ocupación máxima %' = MAXX ( CROSSJOIN ( VALUES ( Calendario[Fecha] ), VALUES ( Horas[Hora] ) ), [Ocupación horaria %] )
+		formatString: 0.0%
+		displayFolder: 5 · Ocupación por hora
+		lineageTag: 12720267-3dd2-4290-826e-e417485a7d20
+
+	measure 'Horas efectivas' = DIVIDE ( SUM ( Movimientos[DuracionMin] ), 60 )
+		formatString: #,0.0
+		displayFolder: 6 · Productividad
+		lineageTag: 153b0634-9d95-4a4b-a88e-cf7b34c32862
+
+	measure 'Palets por hora efectiva' = DIVIDE ( [Movimientos (palets)], [Horas efectivas] )
+		formatString: 0.0
+		displayFolder: 6 · Productividad
+		lineageTag: d733a868-a689-491e-8fe0-772b4a71c666
+
+	measure 'Minutos por palet' = CALCULATE ( AVERAGE ( Movimientos[DuracionMin] ), Movimientos[Tipo] IN { "Entrada", "Salida" } )
+		formatString: 0.0
+		displayFolder: 6 · Productividad
+		lineageTag: abb1e690-ef07-4831-bb61-be184a0a8058
+
+	measure 'Operarios activos' = CALCULATE ( DISTINCTCOUNT ( Movimientos[OperarioID] ), Movimientos[Tipo] IN { "Entrada", "Salida" } )
+		formatString: #,0
+		displayFolder: 6 · Productividad
+		lineageTag: 05b9b3fc-b9d2-4227-89cb-e3a84b971a8c
+
+	measure 'Palets extra por día' = SELECTEDVALUE ( 'Palets extra por día'[Palets extra], 0 )
+		formatString: #,0
+		displayFolder: 7 · Simulador
+		lineageTag: bc0635ba-8096-4d5e-ae79-a174d8b5dfec
+
+	/// Flujo neto medio de las últimas 4 semanas (días abiertos) más los palets extra del simulador.
+	measure 'Crecimiento diario (palets)' =
+			VAR f = MAX ( Calendario[Fecha] )
+			VAR ventana = DATESINPERIOD ( Calendario[Fecha], f, -28, DAY )
+			VAR abiertos = CALCULATE ( COUNTROWS ( Calendario ), ventana, Calendario[Abierto] = "Sí" )
+			VAR neto = DIVIDE ( CALCULATE ( [Flujo neto (palets)], ventana ), abiertos )
+			RETURN neto + [Palets extra por día]
+		formatString: +#,0.0;-#,0.0;0
+		displayFolder: 7 · Simulador
+		lineageTag: 41438950-efb9-45df-ba8e-aebe295ed9ed
+
+	/// Días abiertos hasta ocupar todas las ubicaciones al ritmo de crecimiento actual. En blanco si el stock no crece.
+	measure 'Días hasta llenar' =
+			VAR crec = [Crecimiento diario (palets)]
+			VAR libres = [Capacidad (palets)] - [Stock al cierre (palets)]
+			RETURN IF ( crec > 0, DIVIDE ( libres, crec ) )
+		formatString: 0.0
+		displayFolder: 7 · Simulador
+		lineageTag: 40729775-6d46-4a09-b1c5-89d34aab56e2
+
+	/// Ocupación prevista dentro de 10 días abiertos con el crecimiento diario actual.
+	measure 'Ocupación a 10 días %' = DIVIDE ( [Stock al cierre (palets)] + 10 * [Crecimiento diario (palets)], [Capacidad (palets)] )
+		formatString: 0.0%
+		displayFolder: 7 · Simulador
+		lineageTag: 1f4e72c1-a66d-4104-bc6f-5d8288c91a42
+
+	/// Como Palets en stock, pero sin los filtros de producto y proveedor: sirve para dibujar atenuados los palets que el filtro deja fuera.
+	measure 'Ocupada sin filtros' = CALCULATE ( [Palets en stock], REMOVEFILTERS ( Productos ), REMOVEFILTERS ( Proveedores ) )
+		formatString: 0
+		displayFolder: 8 · Almacén isométrico
+		lineageTag: 65c5acc2-9c3b-4f8a-8c22-c2d5c19d728d
+
+	/// Muelles ocupados por un camión durante la hora elegida, separados por comas (E1,S3...).
+	measure 'Muelles con camión' =
+			VAR d = [Fecha elegida]
+			VAR h = SELECTEDVALUE ( Horas[Hora], 23 )
+			VAR ini = d + TIME ( h, 0, 0 )
+			VAR fin = ini + TIME ( 1, 0, 0 )
+			VAR muelles =
+			    CALCULATETABLE (
+			        VALUES ( Camiones[MuelleID] ),
+			        REMOVEFILTERS ( Calendario ),
+			        Camiones[Inicio operación] < fin,
+			        Camiones[Fin operación] >= ini
+			    )
+			RETURN CONCATENATEX ( muelles, Camiones[MuelleID], ",", Camiones[MuelleID], ASC )
+		displayFolder: 8 · Almacén isométrico
+		lineageTag: 17a55371-10e3-4a5e-8590-bebc27c90016
+
+	/// Palets ubicados durante la hora elegida del día elegido.
+	measure 'Entradas en la hora' =
+			VAR d = [Fecha elegida]
+			VAR h = SELECTEDVALUE ( Horas[Hora], 23 )
+			RETURN COALESCE ( CALCULATE ( [Entradas (palets)], REMOVEFILTERS ( Calendario ), REMOVEFILTERS ( Horas ), REMOVEFILTERS ( Ubicaciones ), Calendario[Fecha] = d, Horas[Hora] = h ), 0 )
+		formatString: #,0
+		displayFolder: 8 · Almacén isométrico
+		lineageTag: c48c4b05-266c-4a91-b8ac-3ebddefe5afb
+
+	/// Palets preparados durante la hora elegida del día elegido.
+	measure 'Salidas en la hora' =
+			VAR d = [Fecha elegida]
+			VAR h = SELECTEDVALUE ( Horas[Hora], 23 )
+			RETURN COALESCE ( CALCULATE ( [Salidas (palets)], REMOVEFILTERS ( Calendario ), REMOVEFILTERS ( Horas ), REMOVEFILTERS ( Ubicaciones ), Calendario[Fecha] = d, Horas[Hora] = h ), 0 )
+		formatString: #,0
+		displayFolder: 8 · Almacén isométrico
+		lineageTag: c73c3411-9fd0-4450-baa3-7502199cd3d9
+
+	/// abc, dias o categoria, según el selector Color por.
+	measure 'Modo de color' = SELECTEDVALUE ( 'Color por'[Clave], "abc" )
+		displayFolder: 8 · Almacén isométrico
+		lineageTag: 62125abe-1eca-41b5-9540-3d8200b9d449
+
+	/// Cabecera de la página para el objeto visual HTML Content.
+	measure 'HTML · Cabecera' =
+			VAR momento = [Título del momento]
+			RETURN
+			    "<style>"
+			        & ".cab{font-family:'Segoe UI',sans-serif;color:#E2E8F0;display:flex;align-items:center;justify-content:space-between;height:64px}"
+			        & ".cab .n{font-size:24px;font-weight:700;letter-spacing:-0.01em}.cab .n span{color:#64748B;font-weight:600}"
+			        & ".cab .s{font-size:14px;color:#94A3B8;margin-top:3px;letter-spacing:.01em}.cab .s::first-letter{text-transform:uppercase}"
+			        & ".cab .pill{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.12em;border-radius:999px;padding:7px 14px;margin-left:10px;background:rgba(12,19,34,.6)}"
+			        & ".cab .sim{color:#5EEAD4;border:1px solid rgba(45,212,191,.4)}.cab .fic{color:#FCD34D;border:1px solid rgba(251,191,36,.4)}"
+			        & ".cab .pto{width:8px;height:8px;border-radius:50%;background:#2DD4BF;animation:pulso 1.6s infinite}"
+			        & "@keyframes pulso{0%{box-shadow:0 0 0 0 rgba(45,212,191,.7)}70%{box-shadow:0 0 0 9px rgba(45,212,191,0)}100%{box-shadow:0 0 0 0 rgba(45,212,191,0)}}"
+			        & "</style>"
+			        & "<div class='cab'><div><div class='n'>Almacén CD-01 <span>· gemelo digital</span></div><div class='s'>" & momento & "</div></div>"
+			        & "<div><span class='pill sim'><span class='pto'></span>SIMULACIÓN HORA A HORA</span><span class='pill fic'>DATOS FICTICIOS</span></div></div>"
+		displayFolder: 9 · HTML
+		lineageTag: ccd323bc-d834-442a-9401-957da7094cb7
+
+	/// Tarjetas animadas del momento elegido para el objeto visual HTML Content.
+	measure 'HTML · Indicadores' =
+			VAR occ = [Ocupación %]
+			VAR stockP = [Palets en stock]
+			VAR cap = [Capacidad (palets)]
+			VAR libres = cap - stockP
+			VAR ent = COALESCE ( [Entradas hasta la hora], 0 )
+			VAR sal = COALESCE ( [Salidas hasta la hora], 0 )
+			VAR cam = COALESCE ( [Camiones en muelle], 0 )
+			VAR conCamion = [Muelles con camión] & ""
+			VAR neto = ent - sal
+			VAR d = [Fecha elegida]
+			VAR h = SELECTEDVALUE ( Horas[Hora], 23 )
+			VAR color = SWITCH ( TRUE (), occ >= 0.9, "#F43F5E", occ >= 0.75, "#F59E0B", "#2DD4BF" )
+			VAR estado = SWITCH ( TRUE (), occ >= 0.9, "Saturado", occ >= 0.75, "En tensión", "Holgado" )
+			VAR circ = 301.59
+			VAR resto = FORMAT ( circ * ( 1 - MIN ( occ, 1 ) ), "0.0", "en-US" )
+			VAR ancho = FORMAT ( MIN ( occ, 1 ) * 100, "0.0", "en-US" )
+			VAR serie =
+			    ADDCOLUMNS (
+			        ALL ( Horas[Hora] ),
+			        "@o",
+			            VAR hh = Horas[Hora]
+			            RETURN CALCULATE ( [Ocupación horaria %], REMOVEFILTERS ( Horas ), Horas[Hora] = hh, REMOVEFILTERS ( Calendario ), Calendario[Fecha] = d )
+			    )
+			VAR puntos =
+			    CONCATENATEX (
+			        serie,
+			        FORMAT ( 4 + Horas[Hora] * 19.6, "0.0", "en-US" ) & "," & FORMAT ( 58 - MAX ( [@o] - 0.4, 0 ) / 0.6 * 52, "0.0", "en-US" ),
+			        " ", Horas[Hora], ASC
+			    )
+			VAR oAct = CALCULATE ( [Ocupación horaria %], REMOVEFILTERS ( Horas ), Horas[Hora] = h, REMOVEFILTERS ( Calendario ), Calendario[Fecha] = d )
+			VAR xAct = FORMAT ( 4 + h * 19.6, "0.0", "en-US" )
+			VAR yAct = FORMAT ( 58 - MAX ( oAct - 0.4, 0 ) / 0.6 * 52, "0.0", "en-US" )
+			VAR pct = FORMAT ( occ * 100, "0.0", "es-ES" )
+			VAR muelles = { "E1", "E2", "E3", "E4", "E5", "E6", "S1", "S2", "S3", "S4", "S5", "S6" }
+			VAR fichas =
+			    CONCATENATEX (
+			        muelles,
+			        IF ( [Value] = "S1", "<i class='sep'></i>" ) & "<b class='m " & IF ( CONTAINSSTRING ( conCamion, [Value] ), IF ( LEFT ( [Value], 1 ) = "E", "e", "s" ) ) & "'>" & [Value] & "</b>",
+			        "", [Value], ASC
+			    )
+			VAR hh = FORMAT ( h, "00" )
+			RETURN
+			    "<style>"
+			        & "html,body{margin:0;padding:0;overflow:hidden}"
+			        & ".kp{font-family:'Segoe UI',sans-serif;color:#E2E8F0;display:grid;gap:10px}"
+			        & ".kp .c{position:relative;background:rgba(12,19,34,.78);border:1px solid rgba(148,163,184,.14);border-radius:18px;padding:12px 16px;overflow:hidden}"
+			        & ".kp .c:before{content:'';position:absolute;left:28px;right:28px;top:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent)}"
+			        & ".kp .et{font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#64748B;display:flex;justify-content:space-between;align-items:baseline}"
+			        & ".kp .et em{font-style:normal;letter-spacing:.02em;text-transform:none;color:#475569;font-weight:500}"
+			        & ".kp .hero{display:flex;align-items:center;gap:18px}"
+			        & ".kp .aro{position:relative;width:112px;height:112px;flex:none}"
+			        & ".kp .cen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}"
+			        & ".kp .big{font-size:28px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}"
+			        & ".kp .v{animation:llenar 1.2s cubic-bezier(.2,.8,.2,1)}@keyframes llenar{from{stroke-dashoffset:301.59}}"
+			        & ".kp .estado{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:999px;border:1px solid}"
+			        & ".kp .pto{width:7px;height:7px;border-radius:50%;animation:pulso 1.6s infinite}"
+			        & "@keyframes pulso{0%{box-shadow:0 0 0 0 var(--c)}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}"
+			        & ".kp .fila{display:flex;justify-content:space-between;font-size:13px;color:#94A3B8;margin-top:6px}"
+			        & ".kp .fila b{color:#E2E8F0;font-weight:600;font-variant-numeric:tabular-nums}"
+			        & ".kp .barra{height:6px;border-radius:3px;background:rgba(148,163,184,.15);margin-top:10px;position:relative}"
+			        & ".kp .barra i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;animation:crecer 1.2s cubic-bezier(.2,.8,.2,1)}@keyframes crecer{from{width:0}}"
+			        & ".kp .barra u{position:absolute;top:-3px;bottom:-3px;width:1px;background:rgba(226,232,240,.4)}"
+			        & ".kp .tres{display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:6px}"
+			        & ".kp .tres div{padding-left:14px;border-left:1px solid rgba(148,163,184,.12)}.kp .tres div:first-child{padding-left:0;border-left:none}"
+			        & ".kp .tres small{display:block;font-size:11px;color:#94A3B8}"
+			        & ".kp .num{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:7px;line-height:1.25}"
+			        & ".kp .ent{color:#2DD4BF}.kp .sal{color:#FB7185}.kp .fl{display:inline-block;font-size:13px}"
+			        & ".kp .sube{animation:sube 1.4s ease-in-out infinite}.kp .baja{animation:baja 1.4s ease-in-out infinite}"
+			        & "@keyframes sube{0%{transform:translateY(4px);opacity:.25}50%{opacity:1}100%{transform:translateY(-4px);opacity:.25}}"
+			        & "@keyframes baja{0%{transform:translateY(-4px);opacity:.25}50%{opacity:1}100%{transform:translateY(4px);opacity:.25}}"
+			        & ".kp .muelles{display:flex;gap:4px;margin-top:8px;align-items:center}.kp .sep{width:8px}"
+			        & ".kp .m{flex:1;font-size:9.5px;font-weight:700;letter-spacing:.04em;text-align:center;padding:4px 0;border-radius:6px;color:#475569;background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.12)}"
+			        & ".kp .m.e{color:#04211D;background:#2DD4BF;border-color:#5EEAD4;box-shadow:0 0 10px rgba(45,212,191,.55)}"
+			        & ".kp .m.s{color:#FFF1F2;background:#F43F5E;border-color:#FB7185;box-shadow:0 0 10px rgba(244,63,94,.55)}"
+			        & ".kp .traza{stroke-dasharray:1000;animation:trazar 1.6s ease-out}@keyframes trazar{from{stroke-dashoffset:1000}}"
+			        & ".kp .ahora{animation:latir 1.4s ease-in-out infinite}@keyframes latir{0%,100%{r:4}50%{r:6.5}}"
+			        & "</style>"
+			        & "<div class='kp'>"
+			        & "<div class='c'><div class='hero'><div class='aro'><svg viewBox='0 0 112 112' width='112' height='112'>"
+			        & "<circle cx='56' cy='56' r='48' fill='none' stroke='rgba(148,163,184,.14)' stroke-width='9'/>"
+			        & "<circle class='v' cx='56' cy='56' r='48' fill='none' stroke='" & color & "' stroke-width='9' stroke-linecap='round' stroke-dasharray='301.59' stroke-dashoffset='" & resto & "' transform='rotate(-90 56 56)'/></svg>"
+			        & "<div class='cen'><div class='big' style='color:" & color & "'>" & pct & "<span style='font-size:14px'> %</span></div><div class='et' style='display:block'>Ocupación</div></div></div>"
+			        & "<div style='flex:1'><span class='estado' style='color:" & color & ";border-color:" & color & "66;--c:" & color & "99'><span class='pto' style='background:" & color & "'></span>" & estado & "</span>"
+			        & "<div class='fila'>Palets en stock <b>" & FORMAT ( stockP, "#,0", "es-ES" ) & "</b></div>"
+			        & "<div class='fila'>Huecos libres <b>" & FORMAT ( libres, "#,0", "es-ES" ) & "</b></div>"
+			        & "<div class='fila'>Capacidad <b>" & FORMAT ( cap, "#,0", "es-ES" ) & " palets</b></div>"
+			        & "<div class='barra'><i style='width:" & ancho & "%;background:linear-gradient(90deg,#2DD4BF," & color & ")'></i><u style='left:75%'></u><u style='left:90%'></u></div></div></div></div>"
+			        & "<div class='c'><div class='et'>Flujo del día<em>hasta las " & hh & ":59</em></div><div class='tres'>"
+			        & "<div><small>Entradas</small><div class='num ent'><span class='fl sube'>▲</span>" & FORMAT ( ent, "#,0", "es-ES" ) & "</div></div>"
+			        & "<div><small>Salidas</small><div class='num sal'><span class='fl baja'>▼</span>" & FORMAT ( sal, "#,0", "es-ES" ) & "</div></div>"
+			        & "<div><small>Flujo neto</small><div class='num'>" & IF ( neto > 0, "+" ) & FORMAT ( neto, "#,0", "es-ES" ) & "</div></div></div></div>"
+			        & "<div class='c'><div class='et'>Camiones en muelle<em><b style='color:#E2E8F0;font-size:13px'>" & cam & "</b> de 12 ocupados</em></div><div class='muelles'>" & fichas & "</div></div>"
+			        & "<div class='c'><div class='et'>Ocupación del día, hora a hora<em>línea discontinua: 90 %</em></div>"
+			        & "<svg viewBox='0 0 460 70' width='100%' height='70' style='margin-top:6px;display:block'><defs><linearGradient id='gOcu' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='" & color & "' stop-opacity='.35'/><stop offset='1' stop-color='" & color & "' stop-opacity='0'/></linearGradient></defs>"
+			        & "<line x1='4' x2='455' y1='14.7' y2='14.7' stroke='rgba(244,63,94,.45)' stroke-dasharray='4 4'/>"
+			        & "<polygon points='4,58 " & puntos & " 454.8,58' fill='url(#gOcu)'/>"
+			        & "<polyline class='traza' points='" & puntos & "' fill='none' stroke='" & color & "' stroke-width='2.5' stroke-linejoin='round'/>"
+			        & "<circle class='ahora' cx='" & xAct & "' cy='" & yAct & "' r='5' fill='#FFFFFF' stroke='" & color & "' stroke-width='3'/>"
+			        & "<text x='4' y='69' fill='#475569' font-size='10'>00h</text><text x='231' y='69' fill='#475569' font-size='10' text-anchor='middle'>12h</text><text x='455' y='69' fill='#475569' font-size='10' text-anchor='end'>23h</text></svg></div>"
+			        & "</div>"
+		displayFolder: 9 · HTML
+		lineageTag: c89ff08a-4026-4df6-b46f-e219fe546eaf
+
+	/// Leyenda del almacén isométrico según el modo de color.
+	measure 'HTML · Leyenda' =
+			VAR modo = [Modo de color]
+			VAR it = "<span class='i'><i class='c' style='background:"
+			VAR palets =
+			    SWITCH (
+			        modo,
+			        "dias", it & "#2DD4BF'></i>Menos de 7 días</span>" & it & "#FBBF24'></i>De 7 a 21 días</span>" & it & "#F43F5E'></i>Más de 21 días</span>",
+			        "categoria", it & "#38BDF8'></i>Bebidas</span>" & it & "#F59E0B'></i>Alimentación</span>" & it & "#22C55E'></i>Droguería</span>" & it & "#EC4899'></i>Higiene</span>" & it & "#F97316'></i>Mascotas</span>" & it & "#8B5CF6'></i>Bazar</span>" & it & "#EF4444'></i>Navidad</span>",
+			        it & "#2BC8B2'></i>Rotación A</span>" & it & "#7C8CF6'></i>Rotación B</span>" & it & "#D57BEA'></i>Rotación C</span>"
+			    )
+			RETURN
+			    "<style>html,body{margin:0;padding:0;overflow:hidden}.ley{font-family:'Segoe UI',sans-serif;color:#CBD5E1;font-size:12px;display:flex;flex-wrap:nowrap;gap:6px 14px;align-items:center;justify-content:flex-end;height:100%;white-space:nowrap}"
+			        & ".ley .i{display:inline-flex;align-items:center}.ley .c{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px}"
+			        & ".ley .sep{width:1px;height:14px;background:rgba(148,163,184,.3)}</style>"
+			        & "<div class='ley'>" & palets & "<span class='sep'></span>"
+			        & it & "#14B8A6;border-radius:50%'></i>Camión de proveedor</span>" & it & "#F43F5E;border-radius:50%'></i>Camión a cliente</span></div>"
+		displayFolder: 9 · HTML
+		lineageTag: bda2c12a-08e1-4419-9794-9f4385509e46
+
+	/// Entradas y salidas de la ubicación durante la hora elegida del día elegido (para marcar palets movidos y situar carretillas).
+	measure 'Actividad en la hora' =
+			VAR d = [Fecha elegida]
+			VAR h = SELECTEDVALUE ( Horas[Hora], 23 )
+			RETURN
+			    COALESCE (
+			        CALCULATE (
+			            COUNTROWS ( Movimientos ),
+			            REMOVEFILTERS ( Calendario ),
+			            REMOVEFILTERS ( Horas ),
+			            Calendario[Fecha] = d,
+			            Horas[Hora] = h,
+			            Movimientos[Tipo] IN { "Entrada", "Salida" }
+			        ),
+			        0
+			    )
+		formatString: 0
+		displayFolder: 8 · Almacén isométrico
+		lineageTag: 4f0be12d-d7b1-4b3e-9e60-3df7968f3777
+
+	/// Día que se está viendo: el que se elige en la curva de ocupación o, si no hay ninguno, el 16/12/2025 (pico de la campaña de Navidad).
+	measure 'Fecha elegida' = IF ( HASONEVALUE ( Calendario[Fecha] ), VALUES ( Calendario[Fecha] ), DATE ( 2025, 12, 16 ) )
+		formatString: dd/mm/yyyy
+		displayFolder: 1 · Momento
+		lineageTag: d8aaf339-05a1-4fb3-9064-cb05e9bb5bcd
+
+	/// Fila que se pone en primer plano en el almacén isométrico (Todas = vista completa).
+	measure 'Fila en foco' = SELECTEDVALUE ( 'Fila en foco'[Clave], "Todas" )
+		displayFolder: 8 · Almacén isométrico
+		lineageTag: 75ce7626-4f18-4093-a8c3-b9135dd14699
+
+	column Oculta
+		isHidden
+		lineageTag: 07bb99fb-1f8f-4b8d-86b9-5c965f85fbfe
+		isNameInferred
+		sourceColumn: [Oculta]
+
+	partition Medidas = calculated
+		mode: import
+		source = ROW("Oculta", BLANK())
+

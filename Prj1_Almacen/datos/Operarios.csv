@@ -1,0 +1,12 @@
+OperarioID,Operario,Turno,Rol
+OP-01,Operario 01,Mañana,Carretillero
+OP-02,Operario 02,Mañana,Carretillero
+OP-03,Operario 03,Mañana,Carretillero
+OP-04,Operario 04,Mañana,Carretillero
+OP-05,Operario 05,Mañana,Preparador
+OP-06,Operario 06,Mañana,Preparador
+OP-07,Operario 07,Mañana,Preparador
+OP-08,Operario 08,Tarde,Preparador
+OP-09,Operario 09,Tarde,Preparador
+OP-10,Operario 10,Tarde,Preparador
+OP-11,Operario 11,Tarde,Preparador

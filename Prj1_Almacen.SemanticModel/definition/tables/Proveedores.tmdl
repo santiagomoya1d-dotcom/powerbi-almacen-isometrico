@@ -1,0 +1,35 @@
+table Proveedores
+	lineageTag: e2736891-d72d-445e-b64a-51581e8af5e6
+
+	column ProveedorID
+		dataType: string
+		lineageTag: 873fcf68-590b-4242-b793-3a2e91238c2a
+		sourceColumn: ProveedorID
+
+	column Proveedor
+		dataType: string
+		lineageTag: 7f7967e6-8776-4b97-a9df-9bf186f699ad
+		sourceColumn: Proveedor
+
+	column Categoría
+		dataType: string
+		lineageTag: da00a05f-974d-4d0b-b179-41f30c54f795
+		sourceColumn: Categoría
+
+	column 'Plazo de entrega (días)'
+		dataType: int64
+		lineageTag: 5126ce2e-11bb-488d-93be-520c0ccd8723
+		summarizeBy: none
+		sourceColumn: Plazo de entrega (días)
+
+	partition Proveedores = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents(CarpetaDatos & "Proveedores.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"ProveedorID", type text}, {"Proveedor", type text}, {"Categoría", type text}, {"Plazo de entrega (días)", Int64.Type}}, "en-US")
+				in
+				    Tipos
+

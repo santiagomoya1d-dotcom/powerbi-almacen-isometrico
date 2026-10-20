@@ -1,0 +1,61 @@
+table 'Stock diario'
+	lineageTag: 69930eac-e7f4-41f5-ae09-2c4f26b2ec50
+
+	column Fecha
+		dataType: dateTime
+		isHidden
+		lineageTag: 03fbde21-03b3-460e-8228-b4ba443d95f7
+		sourceColumn: Fecha
+
+	column SKU
+		dataType: string
+		isHidden
+		lineageTag: b53231f8-b146-4224-add7-dfde59efb140
+		sourceColumn: SKU
+
+	column 'Stock final (palets)'
+		dataType: int64
+		lineageTag: d71564fd-de72-4b25-9ea4-ad02ec5bea80
+		sourceColumn: Stock final (palets)
+
+	column 'Entradas (palets)'
+		dataType: int64
+		lineageTag: 3cac2f1f-deba-4cb3-95ea-e3101cb1ed43
+		sourceColumn: Entradas (palets)
+
+	column 'Demanda (palets)'
+		dataType: int64
+		lineageTag: 9ba7b0bf-aedc-4ed4-8c23-7a7e50746eae
+		sourceColumn: Demanda (palets)
+
+	column 'Servidos (palets)'
+		dataType: int64
+		lineageTag: e1ae3986-bf0b-4d6f-aac4-627d20b36693
+		sourceColumn: Servidos (palets)
+
+	column 'No servidos (palets)'
+		dataType: int64
+		lineageTag: dfd36ade-ea91-4f92-a95e-ef94c60a9330
+		sourceColumn: No servidos (palets)
+
+	column 'Edad media (días)'
+		dataType: double
+		lineageTag: b1bb29b6-5777-4e35-9cdf-abdf6314bbc1
+		sourceColumn: Edad media (días)
+
+	column 'Valor stock (€)'
+		dataType: int64
+		lineageTag: 91b3f032-20f2-43b5-a91e-396e7d1cb935
+		sourceColumn: Valor stock (€)
+
+	partition 'Stock diario' = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents(CarpetaDatos & "StockDiario.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"Fecha", type date}, {"SKU", type text}, {"Stock final (palets)", Int64.Type}, {"Entradas (palets)", Int64.Type}, {"Demanda (palets)", Int64.Type}, {"Servidos (palets)", Int64.Type}, {"No servidos (palets)", Int64.Type}, {"Edad media (días)", type number}, {"Valor stock (€)", Int64.Type}}, "en-US")
+				in
+				    Tipos
+

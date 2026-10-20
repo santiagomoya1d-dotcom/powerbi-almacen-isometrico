@@ -1,0 +1,4 @@
+/// Carpeta con los CSV ficticios que genera Prj1_Almacen/generador/generar_datos.py. Cámbiala a la ruta donde hayas descargado el repositorio.
+expression CarpetaDatos = "D:\PBIP Projects\Prj1_Almacen\datos\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 78913b45-228a-4150-8292-a8fb1e0d6d9a
+

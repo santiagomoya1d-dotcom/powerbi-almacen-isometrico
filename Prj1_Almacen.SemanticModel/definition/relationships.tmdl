@@ -1,0 +1,76 @@
+relationship Movimientos_Fecha_Calendario_Fecha
+	fromColumn: Movimientos.Fecha
+	toColumn: Calendario.Fecha
+
+relationship Movimientos_Hora_Horas_Hora
+	fromColumn: Movimientos.Hora
+	toColumn: Horas.Hora
+
+relationship Movimientos_UbicacionID_Ubicaciones_UbicacionID
+	fromColumn: Movimientos.UbicacionID
+	toColumn: Ubicaciones.UbicacionID
+
+relationship Movimientos_SKU_Productos_SKU
+	fromColumn: Movimientos.SKU
+	toColumn: Productos.SKU
+
+relationship Movimientos_MuelleID_Muelles_MuelleID
+	fromColumn: Movimientos.MuelleID
+	toColumn: Muelles.MuelleID
+
+relationship Movimientos_OperarioID_Operarios_OperarioID
+	fromColumn: Movimientos.OperarioID
+	toColumn: Operarios.OperarioID
+
+relationship Movimientos_DestinoID_Destinos_DestinoID
+	fromColumn: Movimientos.DestinoID
+	toColumn: Destinos.DestinoID
+
+relationship Ubicaciones_Pasillo_Pasillos_Pasillo
+	fromColumn: Ubicaciones.Pasillo
+	toColumn: Pasillos.Pasillo
+
+relationship Pasillos_ZonaID_Zonas_ZonaID
+	fromColumn: Pasillos.ZonaID
+	toColumn: Zonas.ZonaID
+
+relationship Productos_ProveedorID_Proveedores_ProveedorID
+	fromColumn: Productos.ProveedorID
+	toColumn: Proveedores.ProveedorID
+
+relationship Camiones_Fecha_Calendario_Fecha
+	fromColumn: Camiones.Fecha
+	toColumn: Calendario.Fecha
+
+relationship Camiones_MuelleID_Muelles_MuelleID
+	fromColumn: Camiones.MuelleID
+	toColumn: Muelles.MuelleID
+
+relationship Camiones_ProveedorID_Proveedores_ProveedorID
+	fromColumn: Camiones.ProveedorID
+	toColumn: Proveedores.ProveedorID
+
+relationship Camiones_DestinoID_Destinos_DestinoID
+	fromColumn: Camiones.DestinoID
+	toColumn: Destinos.DestinoID
+
+relationship 'Stock diario_Fecha_Calendario_Fecha'
+	fromColumn: 'Stock diario'.Fecha
+	toColumn: Calendario.Fecha
+
+relationship 'Stock diario_SKU_Productos_SKU'
+	fromColumn: 'Stock diario'.SKU
+	toColumn: Productos.SKU
+
+relationship 'Ocupación horaria_Fecha_Calendario_Fecha'
+	fromColumn: 'Ocupación horaria'.Fecha
+	toColumn: Calendario.Fecha
+
+relationship 'Ocupación horaria_Hora_Horas_Hora'
+	fromColumn: 'Ocupación horaria'.Hora
+	toColumn: Horas.Hora
+
+relationship 'Ocupación horaria_Pasillo_Pasillos_Pasillo'
+	fromColumn: 'Ocupación horaria'.Pasillo
+	toColumn: Pasillos.Pasillo
+

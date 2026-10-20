@@ -1,0 +1,99 @@
+table Movimientos
+	lineageTag: 7392f0c9-43ac-402b-98cd-e55cff930543
+
+	column MovimientoID
+		dataType: int64
+		isHidden
+		lineageTag: 3e3fdaf8-cf8f-46fa-9468-0bf53d0a7880
+		summarizeBy: none
+		sourceColumn: MovimientoID
+
+	column FechaHora
+		dataType: dateTime
+		formatString: dd/mm/yyyy hh:nn
+		lineageTag: cbcf2f0a-6f7b-4526-accb-92952c08c6a7
+		sourceColumn: FechaHora
+
+	column Fecha
+		dataType: dateTime
+		isHidden
+		lineageTag: 8e29e74e-07e6-41b8-997d-220ae308d391
+		sourceColumn: Fecha
+
+	column Hora
+		dataType: int64
+		isHidden
+		lineageTag: 50973042-c301-413d-bf93-d21ed82d4945
+		summarizeBy: none
+		sourceColumn: Hora
+
+	column Tipo
+		dataType: string
+		lineageTag: 9b76c9e9-5b84-4262-b4f3-5e7a477b0718
+		sourceColumn: Tipo
+
+	column Signo
+		dataType: int64
+		isHidden
+		lineageTag: 9ae9beb7-4906-4491-9aa2-3e006e3277df
+		summarizeBy: none
+		sourceColumn: Signo
+
+	column SKU
+		dataType: string
+		isHidden
+		lineageTag: 865ad75f-e2d2-4f3d-bbc8-ff13f758714c
+		sourceColumn: SKU
+
+	column UbicacionID
+		dataType: string
+		isHidden
+		lineageTag: 435ccc3d-6e2a-47f6-96a4-e6ffbff67258
+		sourceColumn: UbicacionID
+
+	column MuelleID
+		dataType: string
+		isHidden
+		lineageTag: ff72f022-e772-42f1-9ddf-4ceadec387bc
+		sourceColumn: MuelleID
+
+	column CamionID
+		dataType: string
+		isHidden
+		lineageTag: 38c71e39-fc3b-4840-b370-3920d1059893
+		sourceColumn: CamionID
+
+	column OperarioID
+		dataType: string
+		isHidden
+		lineageTag: 941fe3db-9d35-42b9-ad80-b06072eace6a
+		sourceColumn: OperarioID
+
+	column ProveedorID
+		dataType: string
+		isHidden
+		lineageTag: 43a9a585-4af1-48c0-b136-58a3df08813b
+		sourceColumn: ProveedorID
+
+	column DestinoID
+		dataType: string
+		isHidden
+		lineageTag: 0f449a0c-f319-4e22-bea7-abdb2e53a659
+		sourceColumn: DestinoID
+
+	column DuracionMin
+		dataType: double
+		lineageTag: 4d1c0caa-4f2a-47cf-8c2d-83ddad822b1b
+		sourceColumn: DuracionMin
+
+	partition Movimientos = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents(CarpetaDatos & "Movimientos.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"MovimientoID", Int64.Type}, {"FechaHora", type datetime}, {"Fecha", type date}, {"Hora", Int64.Type}, {"Tipo", type text}, {"Signo", Int64.Type}, {"SKU", type text}, {"UbicacionID", type text}, {"MuelleID", type text}, {"CamionID", type text}, {"OperarioID", type text}, {"ProveedorID", type text}, {"DestinoID", type text}, {"DuracionMin", type number}}, "en-US")
+				in
+				    Tipos
+

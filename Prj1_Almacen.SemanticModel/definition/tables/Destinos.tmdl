@@ -1,0 +1,38 @@
+table Destinos
+	lineageTag: 1365c817-bf88-4928-abf8-2140abe2d09b
+
+	column DestinoID
+		dataType: string
+		lineageTag: 1b3babe0-ceef-4050-b282-aa11147085b7
+		sourceColumn: DestinoID
+
+	column Destino
+		dataType: string
+		lineageTag: 87820ec1-501b-48ae-b05c-975221a6d775
+		sourceColumn: Destino
+
+	column Latitud
+		dataType: double
+		lineageTag: 75186950-6458-477b-8d5f-9d39c397101f
+		dataCategory: Latitude
+		summarizeBy: none
+		sourceColumn: Latitud
+
+	column Longitud
+		dataType: double
+		lineageTag: e00ae6d5-b0b1-4058-acf6-2cf82b6199f3
+		dataCategory: Longitude
+		summarizeBy: none
+		sourceColumn: Longitud
+
+	partition Destinos = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents(CarpetaDatos & "Destinos.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"DestinoID", type text}, {"Destino", type text}, {"Latitud", type number}, {"Longitud", type number}}, "en-US")
+				in
+				    Tipos
+

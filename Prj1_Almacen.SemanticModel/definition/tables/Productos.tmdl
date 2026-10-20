@@ -1,0 +1,52 @@
+table Productos
+	lineageTag: 6b5a8830-8829-4773-8d90-166a1e861c2b
+
+	column SKU
+		dataType: string
+		lineageTag: d16a336f-8fac-4568-9285-b26a0317ecaa
+		sourceColumn: SKU
+
+	column Producto
+		dataType: string
+		lineageTag: a9e07119-6c96-4ed4-9c4e-921c4832dd46
+		sourceColumn: Producto
+
+	column Categoría
+		dataType: string
+		lineageTag: ca3c9823-2a39-4c6e-9889-721247503502
+		sourceColumn: Categoría
+
+	column ProveedorID
+		dataType: string
+		isHidden
+		lineageTag: 934ef61b-1578-42fd-8e99-b65d6d21e419
+		sourceColumn: ProveedorID
+
+	column 'Valor palet (€)'
+		dataType: int64
+		lineageTag: d785534c-555c-4ce0-9258-0e8d8032e70e
+		summarizeBy: none
+		sourceColumn: Valor palet (€)
+
+	column 'Clase ABC'
+		dataType: string
+		lineageTag: c927122f-ac27-43be-9e46-cf3568f499a0
+		sourceColumn: Clase ABC
+
+	column 'Demanda media (palets/día)'
+		dataType: double
+		lineageTag: cc6bdccd-a6ea-447c-aa11-c305c609f974
+		summarizeBy: none
+		sourceColumn: Demanda media (palets/día)
+
+	partition Productos = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents(CarpetaDatos & "Productos.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"SKU", type text}, {"Producto", type text}, {"Categoría", type text}, {"ProveedorID", type text}, {"Valor palet (€)", Int64.Type}, {"Clase ABC", type text}, {"Demanda media (palets/día)", type number}}, "en-US")
+				in
+				    Tipos
+

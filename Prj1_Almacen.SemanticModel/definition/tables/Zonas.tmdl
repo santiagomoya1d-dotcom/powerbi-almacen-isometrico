@@ -1,0 +1,43 @@
+table Zonas
+	lineageTag: 9f4bfbb0-e593-462d-bf40-5e53ff20ec98
+
+	column ZonaID
+		dataType: string
+		lineageTag: 74dae02c-ab40-47a2-8a8a-a0820f54e832
+		sourceColumn: ZonaID
+
+	column Zona
+		dataType: string
+		lineageTag: 3de1344b-8f25-4e4b-8c43-7667e8180a82
+		sourceColumn: Zona
+		sortByColumn: Orden
+
+	column Orden
+		dataType: int64
+		isHidden
+		lineageTag: fd4a60ed-092a-4b3b-a395-e11fc1bc43e3
+		summarizeBy: none
+		sourceColumn: Orden
+
+	column Descripción
+		dataType: string
+		lineageTag: 299c3320-fadf-4877-b124-cf37fdb2a5bb
+		sourceColumn: Descripción
+
+	column 'Capacidad (palets)'
+		dataType: int64
+		lineageTag: e0a17476-b58b-4105-bae7-ca581413bd41
+		summarizeBy: none
+		sourceColumn: Capacidad (palets)
+
+	partition Zonas = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents(CarpetaDatos & "Zonas.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"ZonaID", type text}, {"Zona", type text}, {"Orden", Int64.Type}, {"Descripción", type text}, {"Capacidad (palets)", Int64.Type}}, "en-US")
+				in
+				    Tipos
+

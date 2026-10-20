@@ -1,0 +1,47 @@
+{
+  "name": "Almacén oscuro",
+  "dataColors": ["#2DD4BF", "#8B5CF6", "#F59E0B", "#38BDF8", "#F43F5E", "#22C55E", "#EC4899", "#F97316"],
+  "foreground": "#E2E8F0",
+  "foregroundNeutralSecondary": "#94A3B8",
+  "foregroundNeutralTertiary": "#64748B",
+  "background": "#0B1220",
+  "backgroundLight": "#111B2E",
+  "backgroundNeutral": "#1E293B",
+  "tableAccent": "#2DD4BF",
+  "good": "#22C55E",
+  "neutral": "#F59E0B",
+  "bad": "#F43F5E",
+  "textClasses": {
+    "callout": {"fontSize": 28, "fontFace": "Segoe UI Semibold", "color": "#E2E8F0"},
+    "title": {"fontSize": 12, "fontFace": "Segoe UI Semibold", "color": "#CBD5E1"},
+    "header": {"fontSize": 12, "fontFace": "Segoe UI Semibold", "color": "#CBD5E1"},
+    "label": {"fontSize": 10, "fontFace": "Segoe UI", "color": "#94A3B8"}
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [{"show": true, "color": {"solid": {"color": "#0B1220"}}, "transparency": 100}],
+        "border": [{"show": false}],
+        "dropShadow": [{"show": false}],
+        "visualHeader": [{"show": false}],
+        "title": [{"fontColor": {"solid": {"color": "#CBD5E1"}}, "fontSize": 12, "fontFamily": "Segoe UI Semibold"}],
+        "categoryAxis": [{"labelColor": {"solid": {"color": "#94A3B8"}}, "titleColor": {"solid": {"color": "#94A3B8"}}, "gridlineColor": {"solid": {"color": "#1E293B"}}, "showAxisTitle": false}],
+        "valueAxis": [{"labelColor": {"solid": {"color": "#94A3B8"}}, "titleColor": {"solid": {"color": "#94A3B8"}}, "gridlineColor": {"solid": {"color": "#1E293B"}}, "showAxisTitle": false}],
+        "legend": [{"labelColor": {"solid": {"color": "#CBD5E1"}}}],
+        "labels": [{"color": {"solid": {"color": "#E2E8F0"}}}]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [{"color": {"solid": {"color": "#0B1220"}}, "transparency": 0}],
+        "outspace": [{"color": {"solid": {"color": "#070D18"}}, "transparency": 0}]
+      }
+    },
+    "slicer": {
+      "*": {
+        "header": [{"show": false}],
+        "items": [{"fontColor": {"solid": {"color": "#CBD5E1"}}, "background": {"solid": {"color": "#111B2E"}}, "outlineColor": {"solid": {"color": "#22324D"}}, "textSize": 11}]
+      }
+    }
+  }
+}

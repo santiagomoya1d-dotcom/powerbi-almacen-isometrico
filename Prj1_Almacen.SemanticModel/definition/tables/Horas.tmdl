@@ -1,0 +1,36 @@
+table Horas
+	lineageTag: dd98b7df-f626-40c3-92fa-ec59b2706ecf
+
+	column Hora
+		dataType: int64
+		lineageTag: 876777c1-d058-4bf5-b1e1-0091537a4d36
+		summarizeBy: none
+		sourceColumn: Hora
+
+	column 'Hora texto'
+		dataType: string
+		lineageTag: 7a0e3069-b2b8-478e-9eca-9998529f83b8
+		sourceColumn: Hora texto
+		sortByColumn: Hora
+
+	column Turno
+		dataType: string
+		lineageTag: b3b63e6f-7c18-477a-be34-384ace36ea5d
+		sourceColumn: Turno
+
+	/// Etiqueta compacta de la hora (06h, 07h...) para la barra de horas.
+	column 'Hora corta' = FORMAT ( Horas[Hora], "00" ) & "h"
+		lineageTag: 1b919987-c52d-4ff0-a70a-5b5852c41bc3
+		sortByColumn: Hora
+
+	partition Horas = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents(CarpetaDatos & "Horas.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"Hora", Int64.Type}, {"Hora texto", type text}, {"Turno", type text}}, "en-US")
+				in
+				    Tipos
+
