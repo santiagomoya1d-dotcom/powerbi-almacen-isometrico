@@ -3,21 +3,28 @@
 Escribe la página «Almacén en vivo» del informe en formato PBIR (archivos de texto del proyecto PBIP).
 
 Uso:     python pagina_almacen.py            (busca Prj1_Almacen.Report en la raíz del repositorio)
-         python pagina_almacen.py "<carpeta que contiene Prj1_Almacen.Report>"
+         python pagina_almacen.py [--config otra.config.json] [--proyecto "<carpeta con Prj1_Almacen.Report>"]
 Después: en Power BI Desktop, «Aplicar cambios externos» (o cerrar y abrir el .pbip).
 
 Lee de los archivos que ya guardó Power BI las versiones de esquema y los identificadores de
-Deneb y HTML Content, para escribir lo mismo que escribiría Desktop.
+Deneb y HTML Content, para escribir lo mismo que escribiría Desktop. De almacen.config.json toma
+las horas del selector, la hora por defecto y el número de filas del selector de modo corte.
 """
 from __future__ import annotations
 
 import json
 import shutil
-import sys
 from pathlib import Path
 
+from configuracion import argumentos, cargar
+
 RAIZ = Path(__file__).resolve().parent.parent          # carpeta Prj1_Almacen (generador, deneb, informe…)
-PROYECTO = Path(sys.argv[1]) if len(sys.argv) > 1 else next(
+_p = argumentos("Escribe la página «Almacén en vivo» del informe (PBIR).")
+_p.add_argument("--proyecto", help="carpeta que contiene Prj1_Almacen.Report (por defecto, la raíz del repositorio)")
+_p.add_argument("--escena", help="especificación Vega (por defecto, deneb/almacen_isometrico.vega.json)")
+ARGS = _p.parse_args()
+CFG = cargar(ARGS.config)
+PROYECTO = Path(ARGS.proyecto) if ARGS.proyecto else next(
     c for c in (RAIZ, RAIZ.parent) if any(c.glob("*.Report")))   # raíz del repositorio, junto al .pbip
 INFORME = next(PROYECTO.glob("*.Report"))
 DEF = INFORME / "definition"
@@ -136,18 +143,20 @@ def html(nombre, x, y, ancho, alto, z, medida, guid):
         "visualType": guid,
         "query": {"queryState": {"content": {"projections": [proy(med("Medidas", medida))]}}},
         "objects": {"contentFormatting": [{"properties": {"format": texto("html"), "renderMode": texto("rebuild"),
-                                                          "userSelect": lit("false"), "noDataMessage": texto("")}}]},
+                                                          "userSelect": lit("false"), "noDataMessage": texto("")}}],
+                    # Lo añade Desktop al guardar: se escribe igual para que el repositorio no cambie solo
+                    "compatibility": [{"properties": {"legacyRendering": lit("true")}}]},
         "visualContainerObjects": contenedor(),
         "drillFilterOtherVisuals": True,
     })
 
 
 def deneb(nombre, x, y, ancho, alto, z, guid, spec: str):
-    campos = [col("Ubicaciones", c) for c in ("UbicacionID", "Pasillo", "Hueco", "Nivel", "Posición", "X", "Y", "Z")]
+    campos = [col("Ubicaciones", c) for c in ("UbicacionID", "Pasillo", "Hueco", "Nivel", "Posición")]
     campos += [med("Medidas", m) for m in (
         "Palets en stock", "Ocupada sin filtros", "Producto en ubicación", "Clase ABC en ubicación",
         "Categoría en ubicación", "Días en stock", "Muelles con camión", "Entradas en la hora",
-        "Salidas en la hora", "Modo de color", "Actividad en la hora", "Fila en foco")]
+        "Salidas en la hora", "Modo de color", "Actividad en la hora", "Fila en foco", "Paleta de categorías")]
     return visual(nombre, x, y, ancho, alto, z, {
         "visualType": guid,
         "query": {"queryState": {"dataset": {"projections": [proy(c) for c in campos]}}},
@@ -248,21 +257,16 @@ def curva(nombre, x, y, ancho, alto, z):
     })
 
 
-COLORES_CATEGORIA = {
-    "Bebidas": "#38BDF8", "Alimentación": "#F59E0B", "Droguería": "#22C55E", "Higiene y belleza": "#EC4899",
-    "Mascotas": "#F97316", "Bazar y hogar": "#8B5CF6", "Temporada Navidad": "#EF4444",
-}
-
-
 def barras(nombre, x, y, ancho, alto, z):
-    colores = [{"properties": {"fill": color(c)}, "selector": {"data": [{"scopeId": {"Comparison": {
-        "ComparisonKind": 0, "Left": col("Productos", "Categoría"), "Right": {"Literal": {"Value": f"'{k}'"}}}}}]}}
-        for k, c in COLORES_CATEGORIA.items()]
+    # Color de cada barra por valor de campo (fx): la medida «Color de categoría» lee la tabla Categorías,
+    # así que una categoría nueva sale con su color sin tocar este archivo
+    colores = [{"properties": {"fill": {"solid": {"color": {"expr": med("Medidas", "Color de categoría")}}}},
+                "selector": {"data": [{"dataViewWildcard": {"matchingOption": 1}}]}}]
     return visual(nombre, x, y, ancho, alto, z, {
         "visualType": "clusteredBarChart",
         "query": {
             "queryState": {
-                "Category": {"projections": [proy(col("Productos", "Categoría")) | {"active": True}]},
+                "Category": {"projections": [proy(col("Categorías", "Categoría")) | {"active": True}]},
                 "Y": {"projections": [proy(med("Medidas", "Palets en stock"))]},
             },
             "sortDefinition": {"sort": [{"field": med("Medidas", "Palets en stock"), "direction": "Descending"}],
@@ -307,7 +311,8 @@ def registrar_tema() -> None:
 def main() -> None:
     g_deneb = identificador("deneb")
     g_html = identificador("htmlContent")
-    spec = (RAIZ / "deneb" / "almacen_isometrico.vega.json").read_text(encoding="utf-8")
+    ruta_escena = Path(ARGS.escena) if ARGS.escena else RAIZ / "deneb" / "almacen_isometrico.vega.json"
+    spec = ruta_escena.read_text(encoding="utf-8")
     spec = json.dumps(json.loads(spec), ensure_ascii=False, separators=(",", ":"))
 
     paginas = DEF / "pages"
@@ -359,21 +364,25 @@ def main() -> None:
         "field": col("Horas", "Hora"),
         "type": "Advanced",
         "filter": {"Version": 2, "From": [{"Name": "h", "Entity": "Horas", "Type": 0}], "Where": [{"Condition": {"And": {
-            "Left": {"Comparison": {"ComparisonKind": 2, "Left": {"Column": {"Expression": {"SourceRef": {"Source": "h"}}, "Property": "Hora"}}, "Right": {"Literal": {"Value": "6L"}}}},
-            "Right": {"Comparison": {"ComparisonKind": 4, "Left": {"Column": {"Expression": {"SourceRef": {"Source": "h"}}, "Property": "Hora"}}, "Right": {"Literal": {"Value": "21L"}}}}}}}]},
+            "Left": {"Comparison": {"ComparisonKind": 2, "Left": {"Column": {"Expression": {"SourceRef": {"Source": "h"}}, "Property": "Hora"}}, "Right": {"Literal": {"Value": f"{CFG.primera_hora}L"}}}},
+            "Right": {"Comparison": {"ComparisonKind": 4, "Left": {"Column": {"Expression": {"SourceRef": {"Source": "h"}}, "Property": "Hora"}}, "Right": {"Literal": {"Value": f"{CFG.ultima_hora}L"}}}}}}}]},
         "howCreated": "User",
     }]}
 
     # Rejilla de la página (1920×1080), igual que el fondo diseñado en Figma:
     # escenario 3D a la izquierda (32,100 · 1328×956) y columna derecha (1384 · 504 de ancho)
+    n_horas = CFG.ultima_hora - CFG.primera_hora + 1
+    n_filas = len(CFG.filas) + 1                       # «Todo» y una ficha por fila
     objetos = [
         html("cabecera", 104, 20, 1784, 64, 1000, "HTML · Cabecera", g_html),
-        botonera("selectorHora", 172, 114, 808, 44, 2000, "Horas", "Hora", "11L", 16, filtro_horas),
+        botonera("selectorHora", 172, 114, 808, 44, 2000, "Horas", "Hora", f"{CFG.hora_por_defecto}L", n_horas, filtro_horas,
+                 letra=11 if n_horas <= 16 else 9),
         botonera("selectorColor", 1048, 114, 300, 44, 3000, "Color por", "Color por", "'ABC'", 3),
         deneb("almacen3d", 40, 172, 1312, 824, 4000, g_deneb, spec),
         # Modo corte: la fila elegida pasa a primer plano y las de delante se vuelven transparentes
         # Posición y tamaño ajustados a mano en Power BI (20/10/2026)
-        botonera("selectorFila", 222, 1008, 581, 40, 4500, "Fila en foco", "Fila", "'Todo'", 9, letra=10),
+        botonera("selectorFila", 222, 1008, 581, 40, 4500, "Fila en foco", "Fila", "'Todo'", n_filas,
+                 letra=10 if n_filas <= 11 else 9),
         html("leyenda", 803, 1012, 541, 32, 5000, "HTML · Leyenda", g_html),
         html("indicadores", 1384, 100, 504, 480, 6000, "HTML · Indicadores", g_html),
         curva("curvaOcupacion", 1392, 634, 488, 134, 7000),

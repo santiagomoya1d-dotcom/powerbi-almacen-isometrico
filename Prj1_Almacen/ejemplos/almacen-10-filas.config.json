@@ -1,0 +1,38 @@
+{
+  "_ayuda": "Ejemplo de otra configuración: 10 filas, 5 categorías y 8 muelles. Pruébala sin tocar el informe con: python construir.py --config ejemplos/almacen-10-filas.config.json --prueba ../prueba-10-filas. Para usarla de verdad, cópiala sobre almacen.config.json y lanza python construir.py.",
+  "almacen": {
+    "nombre": "Almacén Norte",
+    "subtitulo": "plataforma regional",
+    "etiqueta": "Simulación hora a hora",
+    "datos_ficticios": true,
+    "fecha_por_defecto": "2026-06-17",
+    "nota_fecha_por_defecto": "un miércoles de junio"
+  },
+  "estanterias": {
+    "filas": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
+    "huecos_por_fila": 10,
+    "niveles": 5,
+    "palets_por_hueco": 3
+  },
+  "_zonas": "Sin zonas: se reparten solas (la cuarta parte de las filas delante, la mitad en medio, el resto al fondo).",
+  "muelles": {"entrada": 3, "salida": 5},
+  "vista": {"primera_hora": 7, "ultima_hora": 20, "hora_por_defecto": 10},
+  "categorias": [
+    {
+      "nombre": "Frescos", "color": "#22C55E",
+      "simulacion": {"referencias": 40, "peso": 0.35, "estacionalidad": [0.9, 0.9, 1, 1, 1.05, 1.15, 1.2, 1.15, 1, 1, 1, 1.2],
+                     "productos": ["Fruta de temporada", "Verdura en caja", "Lácteos frescos", "Yogures", "Embutido loncheado"]}
+    },
+    {
+      "nombre": "Congelados", "color": "#38BDF8",
+      "simulacion": {"referencias": 25, "peso": 0.2, "productos": ["Verduras congeladas", "Pescado congelado", "Helados", "Pizzas"]}
+    },
+    {"nombre": "Bebidas", "color": "#F59E0B", "simulacion": {"peso": 0.25}},
+    {"nombre": "Limpieza", "color": "#A855F7"},
+    {"nombre": "Pequeño electrodoméstico", "nombre_corto": "Electro", "color": "#F43F5E", "simulacion": {"peso": 0.05, "black_friday": 1.6}}
+  ],
+  "simulacion": {
+    "semilla": 7,
+    "palets_por_dia": "auto"
+  }
+}

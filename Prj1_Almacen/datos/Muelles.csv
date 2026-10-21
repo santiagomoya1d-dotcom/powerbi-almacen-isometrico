@@ -1,13 +1,13 @@
-MuelleID,Muelle,Tipo,Orden,X,Y
-E1,Muelle E1,Entrada,1,2.5,22.0
-E2,Muelle E2,Entrada,2,5.5,22.0
-E3,Muelle E3,Entrada,3,8.5,22.0
-E4,Muelle E4,Entrada,4,11.5,22.0
-E5,Muelle E5,Entrada,5,14.5,22.0
-E6,Muelle E6,Entrada,6,17.5,22.0
-S1,Muelle S1,Salida,7,22.5,22.0
-S2,Muelle S2,Salida,8,25.5,22.0
-S3,Muelle S3,Salida,9,28.5,22.0
-S4,Muelle S4,Salida,10,31.5,22.0
-S5,Muelle S5,Salida,11,34.5,22.0
-S6,Muelle S6,Salida,12,37.5,22.0
+MuelleID,Muelle,Tipo,Orden
+E1,Muelle E1,Entrada,1
+E2,Muelle E2,Entrada,2
+E3,Muelle E3,Entrada,3
+E4,Muelle E4,Entrada,4
+E5,Muelle E5,Entrada,5
+E6,Muelle E6,Entrada,6
+S1,Muelle S1,Salida,7
+S2,Muelle S2,Salida,8
+S3,Muelle S3,Salida,9
+S4,Muelle S4,Salida,10
+S5,Muelle S5,Salida,11
+S6,Muelle S6,Salida,12

@@ -31,6 +31,8 @@ ref table Medidas
 ref table 'Palets extra por día'
 ref table 'Color por'
 ref table 'Fila en foco'
+ref table Categorías
+ref table Almacén
 
 ref cultureInfo es-ES
 

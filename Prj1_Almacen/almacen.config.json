@@ -1,0 +1,131 @@
+{
+  "_ayuda": "Configuración del almacén. Después de cambiarla: python construir.py (detalles en AGENTS.md, en la raíz del repositorio). Las claves que empiezan por _ son comentarios y no se leen.",
+  "almacen": {
+    "nombre": "Almacén CD-01",
+    "subtitulo": "gemelo digital",
+    "etiqueta": "Simulación hora a hora",
+    "datos_ficticios": true,
+    "fecha_por_defecto": "2025-12-16",
+    "nota_fecha_por_defecto": "pico de la campaña de Navidad"
+  },
+  "estanterias": {
+    "_nota": "filas: de la más cercana a los muelles a la más lejana (máximo 18). Todas las filas tienen los mismos huecos, niveles y palets por hueco.",
+    "filas": ["A", "B", "C", "D", "E", "F", "G", "H"],
+    "huecos_por_fila": 12,
+    "niveles": 6,
+    "palets_por_hueco": 3
+  },
+  "zonas": [
+    {"id": "Z1", "nombre": "Alta rotación", "filas": ["A", "B"], "descripcion": "Filas A y B, junto a los muelles"},
+    {"id": "Z2", "nombre": "Rotación media", "filas": ["C", "D", "E", "F"], "descripcion": "Filas C a F"},
+    {"id": "Z3", "nombre": "Reserva", "filas": ["G", "H"], "descripcion": "Filas G y H, al fondo"}
+  ],
+  "muelles": {
+    "_nota": "Un número (se llaman E1, E2… y S1, S2…) o la lista de identificadores.",
+    "entrada": 6,
+    "salida": 6
+  },
+  "vista": {
+    "primera_hora": 6,
+    "ultima_hora": 21,
+    "hora_por_defecto": 11
+  },
+  "categorias": [
+    {
+      "nombre": "Bebidas", "nombre_corto": "Bebidas",
+      "color": "#38BDF8", "color_claro": "#93DDFD", "color_oscuro": "#0284C7",
+      "simulacion": {
+        "referencias": 58, "peso": 0.26, "valor_palet": [250, 450], "proveedores": 3,
+        "estacionalidad": [0.8, 0.85, 0.95, 1.05, 1.15, 1.4, 1.55, 1.45, 1.1, 0.95, 0.95, 1.2],
+        "black_friday": 1.1, "navidad": 1.2,
+        "productos": ["Agua mineral 1,5 L", "Agua con gas 1 L", "Refresco de cola 2 L", "Refresco de naranja 2 L",
+                      "Zumo de naranja 1 L", "Cerveza lata 33 cl", "Cerveza sin alcohol 33 cl", "Bebida isotónica 50 cl",
+                      "Té frío al limón 1,5 L", "Gaseosa 1,5 L"]
+      }
+    },
+    {
+      "nombre": "Alimentación", "nombre_corto": "Alimentación",
+      "color": "#F59E0B", "color_claro": "#FCD38D", "color_oscuro": "#B45309",
+      "simulacion": {
+        "referencias": 75, "peso": 0.28, "valor_palet": [400, 1200], "proveedores": 4,
+        "estacionalidad": [0.9, 0.95, 1, 1.05, 1, 0.95, 0.9, 0.8, 1, 1, 1.05, 1.3],
+        "navidad": 1.25,
+        "productos": ["Arroz redondo 1 kg", "Espaguetis 500 g", "Macarrones 500 g", "Aceite de oliva 1 L",
+                      "Aceite de girasol 1 L", "Tomate triturado 400 g", "Garbanzos cocidos 400 g", "Galletas 800 g",
+                      "Cereales de desayuno 500 g", "Leche UHT 1 L", "Azúcar 1 kg", "Harina de trigo 1 kg",
+                      "Atún en aceite 3x80 g", "Café molido 250 g", "Cacao soluble 400 g"]
+      }
+    },
+    {
+      "nombre": "Droguería", "nombre_corto": "Droguería",
+      "color": "#22C55E", "color_claro": "#9AF0B6", "color_oscuro": "#15803D",
+      "simulacion": {
+        "referencias": 46, "peso": 0.14, "valor_palet": [500, 1100], "proveedores": 3,
+        "estacionalidad": [0.95, 0.95, 1.05, 1.05, 1, 1, 0.95, 0.85, 1, 1, 1.1, 1.1],
+        "black_friday": 1.25,
+        "productos": ["Detergente líquido 3 L", "Detergente en cápsulas 40 uds", "Suavizante 2 L", "Lavavajillas a mano 1 L",
+                      "Pastillas lavavajillas 50 uds", "Lejía 2 L", "Limpiador multiusos 750 ml", "Papel higiénico 12 rollos",
+                      "Papel de cocina 4 rollos", "Fregasuelos 1,5 L"]
+      }
+    },
+    {
+      "nombre": "Higiene y belleza", "nombre_corto": "Higiene",
+      "color": "#EC4899", "color_claro": "#F9B6D6", "color_oscuro": "#BE185D",
+      "simulacion": {
+        "referencias": 42, "peso": 0.11, "valor_palet": [900, 2500], "proveedores": 3,
+        "estacionalidad": [0.9, 0.9, 0.95, 1, 1.05, 1.15, 1.2, 1, 0.95, 0.95, 1.15, 1.3],
+        "black_friday": 1.3,
+        "productos": ["Gel de ducha 750 ml", "Champú 400 ml", "Pasta de dientes 75 ml", "Desodorante 200 ml",
+                      "Pañales talla 4", "Toallitas húmedas 80 uds", "Protector solar 200 ml", "Crema hidratante 400 ml",
+                      "Jabón de manos 500 ml"]
+      }
+    },
+    {
+      "nombre": "Mascotas", "nombre_corto": "Mascotas",
+      "color": "#F97316", "color_claro": "#FDC28E", "color_oscuro": "#C2410C",
+      "simulacion": {
+        "referencias": 25, "peso": 0.06, "valor_palet": [500, 900], "proveedores": 2,
+        "estacionalidad": [1, 1, 1, 1, 1, 1, 0.95, 0.9, 1, 1, 1.05, 1.1],
+        "productos": ["Pienso perro adulto 15 kg", "Pienso gato 4 kg", "Arena para gatos 10 L",
+                      "Comida húmeda gato 12x85 g", "Snacks dentales perro"]
+      }
+    },
+    {
+      "nombre": "Bazar y hogar", "nombre_corto": "Bazar",
+      "color": "#8B5CF6", "color_claro": "#C9BEFF", "color_oscuro": "#6D28D9",
+      "simulacion": {
+        "referencias": 34, "peso": 0.09, "valor_palet": [600, 1800], "proveedores": 3,
+        "estacionalidad": [0.8, 0.85, 0.95, 1, 1, 1, 0.9, 0.8, 1, 1, 1.4, 1.5],
+        "black_friday": 1.45,
+        "productos": ["Bolsas de basura 30 L", "Papel de aluminio 30 m", "Film transparente 50 m", "Pilas AA 8 uds",
+                      "Bombillas LED 3 uds", "Velas aromáticas", "Vasos desechables 50 uds", "Servilletas 100 uds",
+                      "Menaje de cocina"]
+      }
+    },
+    {
+      "nombre": "Temporada Navidad", "nombre_corto": "Navidad",
+      "color": "#EF4444", "color_claro": "#FCA5A5", "color_oscuro": "#B91C1C",
+      "simulacion": {
+        "referencias": 20, "peso": 0.06, "valor_palet": [900, 2600], "proveedores": 2,
+        "estacionalidad": [0.25, 0, 0, 0, 0, 0, 0, 0, 0.02, 0.2, 1.0, 2.4],
+        "navidad": 1.4,
+        "fuera_de_temporada": {"desde": "2026-01-07", "hasta": "2026-08-31", "factor": 0.1},
+        "productos": ["Turrón duro 300 g", "Turrón blando 300 g", "Polvorones 400 g", "Mantecados surtidos 1 kg",
+                      "Cava brut 75 cl", "Bombones surtidos 400 g", "Lote navideño", "Mazapán 250 g"]
+      }
+    }
+  ],
+  "simulacion": {
+    "_nota": "Solo la usa el simulador (generador/generar_datos.py). palets_por_dia «auto» = 160 palets de salida al día por cada 1.728 ubicaciones (con esta configuración, ocupación media del 71 %); súbelo para llenar más el almacén.",
+    "semilla": 2026,
+    "inicio": "2025-10-01",
+    "fin": "2026-09-30",
+    "palets_por_dia": "auto",
+    "palets_por_camion": 33,
+    "dias_de_calentamiento": 28,
+    "operarios": {
+      "Mañana": {"Carretillero": 4, "Preparador": 3},
+      "Tarde": {"Preparador": 4}
+    }
+  }
+}

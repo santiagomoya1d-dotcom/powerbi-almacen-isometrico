@@ -1,0 +1,47 @@
+/// Datos del almacén que se muestran en la página: nombre, etiquetas de la cabecera y día que se abre por defecto.
+/// Sale de almacen.config.json (Almacen.csv). Una sola fila.
+table Almacén
+	lineageTag: fd0572a4-4edd-452d-a953-b273715b336d
+
+	column Nombre
+		dataType: string
+		lineageTag: 36fa5fce-5404-4285-880e-89883913c117
+		sourceColumn: Nombre
+
+	column Subtítulo
+		dataType: string
+		lineageTag: fa1a0ee1-f2b9-446b-a010-44c8a58f6bb1
+		sourceColumn: Subtítulo
+
+	column Etiqueta
+		dataType: string
+		lineageTag: 253ced87-3cc3-495d-beb5-a4cacb0f226f
+		sourceColumn: Etiqueta
+
+	column 'Datos ficticios'
+		dataType: string
+		lineageTag: 7b9a3630-107d-44c5-9824-788cf9086e5a
+		sourceColumn: Datos ficticios
+
+	column 'Fecha por defecto'
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		lineageTag: 3ba2106a-160f-4604-bc85-1283df0f879a
+		sourceColumn: Fecha por defecto
+
+	column 'Nota de la fecha'
+		dataType: string
+		lineageTag: e388cf17-7c29-453a-898f-59854949a1b2
+		sourceColumn: Nota de la fecha
+
+	partition Almacén = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents(CarpetaDatos & "Almacen.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"Nombre", type text}, {"Subtítulo", type text}, {"Etiqueta", type text}, {"Datos ficticios", type text}, {"Fecha por defecto", type date}, {"Nota de la fecha", type text}}, "en-US")
+				in
+				    Tipos
+

@@ -11,36 +11,79 @@ Proyección isométrica 2:1:  px = ox + (x - y)·s     py = oy + ((x + y)/2 - z�
 Caras visibles de cada caja: superior, derecha (plano x+dx) e izquierda (plano y+dy).
 La luz viene de atrás a la derecha: superior clara, derecha media, izquierda oscura.
 
-Uso: python construir_escena.py
+La disposición (filas, pasillos, muelles y tamaño del edificio) se calcula a partir de
+almacen.config.json: no hay coordenadas escritas a mano para un almacén concreto.
+
+Uso: python construir_escena.py [--config otra.config.json] [--salida otra.vega.json]
 """
 from __future__ import annotations
 
 import json
 import math
+import sys
 from pathlib import Path
 
-SALIDA = Path(__file__).resolve().with_name("almacen_isometrico.vega.json")
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "generador"))
+from configuracion import argumentos, cargar  # noqa: E402
 
+ARGS = argumentos("Genera la especificación Vega del almacén isométrico.",
+                  "ruta del .vega.json (por defecto, deneb/almacen_isometrico.vega.json)").parse_args()
+CFG = cargar(ARGS.config)
+SALIDA = Path(ARGS.salida) if ARGS.salida else Path(__file__).resolve().with_name("almacen_isometrico.vega.json")
+
+
+def r3(v: float) -> float:
+    return round(v, 3)
+
+
+# ------------------------------------------------------------------ medidas (unidades de palet)
 ZF = 1.05                      # escala vertical
-X0, BAY, HUECOS, NIVELES = 3.0, 3.2, 12, 6
+X0 = 3.0                       # x donde empiezan las estanterías
+HUECOS, NIVELES, POSICIONES = CFG.huecos, CFG.niveles, CFG.posiciones
+BAY = r3(POSICIONES * 1.0 + 0.2)   # ancho de un hueco: un palet (0,88) por posición más holgura
 LH = 1.05                      # altura entre niveles
 FONDO_RACK = 1.1
-ALTO_RACK = 6.55
-ALTO_MURO = 8.2
-FIN_RACK = X0 + HUECOS * BAY   # 41.4
-W = 45.0                       # ancho del edificio
-D = 28.3                       # fondo del edificio (muro de muelles)
-D_PATIO = D + 7.6              # fin del patio de camiones
+ANCHO_PASILLO = 3.0
+ALTO_RACK = r3((NIVELES - 1) * LH + 1.3)
+ALTO_MURO = r3(max(8.2, ALTO_RACK + 1.65))
+FIN_RACK = X0 + HUECOS * BAY
 LUZ = (-0.2, 0.42)             # desplazamiento de la sombra por unidad de altura
 
-# Filas: (pasillo, y inicial, lado del pasillo de acceso, banda de dibujo)
-FILAS = [("H", 2.6, "neg"), ("G", 3.85, "pos"), ("F", 7.95, "neg"), ("E", 9.2, "pos"),
-         ("D", 13.3, "neg"), ("C", 14.55, "pos"), ("B", 18.65, "neg"), ("A", 19.9, "pos")]
+# Filas de atrás (banda 1) hacia delante (junto a los muelles). Contando desde delante, las filas
+# alternan «pos» (el pasillo de acceso queda delante, hacia los muelles) y «neg» (queda detrás),
+# de modo que cada pareja pos/neg va espalda con espalda y cada pasillo da servicio a dos filas.
+LADO = {f: "pos" if i % 2 == 0 else "neg" for i, f in enumerate(CFG.filas)}
+FILAS, PASILLOS = [], []       # (pasillo, y inicial, lado) · (y0, y1, con paso de cebra)
+y = 0.6
+if LADO[CFG.filas[-1]] == "neg":                    # la fila del fondo necesita pasillo detrás
+    PASILLOS.append((0.25, 2.6, False))
+    y = 2.6
+for f in reversed(CFG.filas):
+    FILAS.append((f, r3(y), LADO[f]))
+    fin = y + FONDO_RACK
+    if LADO[f] == "pos":
+        PASILLOS.append((r3(fin), r3(fin + ANCHO_PASILLO), True))
+        y = fin + ANCHO_PASILLO
+    else:
+        y = fin + 0.15                                # espalda con espalda con la siguiente
+YF = r3(y)                     # fin del pasillo delantero, donde empieza la playa
 BANDA = {p: i + 1 for i, (p, _, _) in enumerate(FILAS)}
-ZONAS = [("Z3 · RESERVA", 2.6, 4.95), ("Z2 · ROTACIÓN MEDIA", 7.95, 15.65), ("Z1 · ALTA ROTACIÓN", 18.65, 21.0)]
-PASILLOS = [(0.25, 2.6), (4.95, 7.95), (10.3, 13.3), (15.65, 18.65), (21.0, 24.0)]
-MUELLES = [(f"E{i + 1}", 3.6 + i * 3.25, True) for i in range(6)] + \
-          [(f"S{i + 1}", 24.3 + i * 3.25, False) for i in range(6)]
+N_FILAS = len(FILAS)
+Y_FILA = {p: y0 for p, y0, _ in FILAS}
+ZONAS = [(z.id, z.tinte, min(Y_FILA[f] for f in z.filas), max(Y_FILA[f] for f in z.filas) + FONDO_RACK)
+         for z in CFG.zonas if z.filas]
+
+D = r3(YF + 4.3)               # fondo del edificio (muro de muelles)
+D_PATIO = r3(D + 7.6)          # fin del patio de camiones
+# Muelles de entrada desde la izquierda y de salida hacia la derecha, cada 3,25; el edificio se
+# ensancha si no caben junto a las estanterías
+PASO_MUELLE = 3.25
+N_E, N_S = len(CFG.muelles_entrada), len(CFG.muelles_salida)
+W = r3(max(FIN_RACK + 3.6, 12.5 + (N_E + N_S - 2) * PASO_MUELLE))   # ancho del edificio
+MUELLES = [(m, r3(3.6 + i * PASO_MUELLE), True) for i, m in enumerate(CFG.muelles_entrada)] + \
+          [(m, r3(W - 4.45 - (N_S - 1 - j) * PASO_MUELLE), False) for j, m in enumerate(CFG.muelles_salida)]
+X_E0 = MUELLES[0][1]
+X_S0 = MUELLES[N_E][1]
 
 # --------------------------------------------------------------------- paleta
 C = {
@@ -97,39 +140,40 @@ base.append(caja(-0.35, D + 0.3, -1.0, W + 0.7, D_PATIO - D - 0.3, 0.92, C["pati
 
 # ------------------------------------------------------------------ suelo
 # Juntas del pavimento
-for x in [i * 4.5 for i in range(1, 10)]:
+for x in [i * 4.5 for i in range(1, math.ceil(W / 4.5))]:
     lineas.append({"a": [x, 0, 0], "b": [x, D, 0], "st": "#26324A", "sw": 0.05, "op": 0.7, "da": None})
-for y in [i * 4.5 for i in range(1, 7)]:
+for y in [i * 4.5 for i in range(1, math.ceil(D / 4.5))]:
     lineas.append({"a": [0, y, 0], "b": [W, y, 0], "st": "#26324A", "sw": 0.05, "op": 0.7, "da": None})
 # Tinte de zonas bajo las estanterías
-for nombre, y0, y1 in ZONAS:
-    color = {"Z1": "#0E3B44", "Z2": "#1A2A4A", "Z3": "#2A1F45"}[nombre[:2]]
+for _, color, y0, y1 in ZONAS:
     planos.append(rect(X0 - 0.5, y0 - 0.25, FIN_RACK + 0.5, y1 + 0.25, fill=color, op=0.55, orden=1))
 # Pasillos: líneas amarillas a los lados y luz cenital
-for y0, y1 in PASILLOS:
+N_LUCES = max(1, int((FIN_RACK - X0 - 1.0) / 7.2))
+for y0, y1, _ in PASILLOS:
     for yy in (y0 + 0.18, y1 - 0.18):
         planos.append(rect(X0 - 0.4, yy - 0.04, FIN_RACK + 0.4, yy + 0.04, fill="#EAB308", op=0.55, orden=3))
-    for cx in [X0 + 4 + i * 7.2 for i in range(5)]:
+    for cx in [X0 + 4 + i * 7.2 for i in range(N_LUCES)]:
         planos.append(circulo(cx, (y0 + y1) / 2, 2.6, n=10, fill="luz", op=1, g="radial", orden=2))
 # Pasillo peatonal junto al muro izquierdo
 planos.append(rect(0.35, 0.3, 2.2, D - 0.5, fill="#22C55E", op=0.10, orden=2))
 for xx in (0.35, 2.2):
     lineas.append({"a": [xx, 0.3, 0], "b": [xx, D - 0.5, 0], "st": "#22C55E", "sw": 0.07, "op": 0.6, "da": [6, 4]})
-for y0, y1 in PASILLOS[1:]:   # pasos de cebra en la boca de cada pasillo
+for y0, y1, _ in [p for p in PASILLOS if p[2]]:   # pasos de cebra en la boca de cada pasillo
     for i in range(5):
         yy = y0 + 0.5 + i * (y1 - y0 - 1.0) / 4
         planos.append(rect(0.5, yy - 0.12, 2.05, yy + 0.12, fill="#E5E7EB", op=0.35, orden=3))
 # Carriles de playa delante de cada muelle y niveladores
 for mid, mx, entrada in MUELLES:
     tono = "#14B8A6" if entrada else "#F43F5E"
-    planos.append(rect(mx - 1.2, 24.2, mx + 1.2, D - 1.3, fill=tono, op=0.09, st=tono, sw=0.05, orden=2))
+    planos.append(rect(mx - 1.2, YF + 0.2, mx + 1.2, D - 1.3, fill=tono, op=0.09, st=tono, sw=0.05, orden=2))
     planos.append(rect(mx - 1.2, D - 1.15, mx + 1.2, D - 0.05, fill="#2A3344", op=1, orden=3))
     for i in range(6):   # franja de seguridad amarilla y negra en el borde del nivelador
         planos.append(rect(mx - 1.2 + i * 0.4, D - 1.15, mx - 1.0 + i * 0.4, D - 0.95, fill="#EAB308", op=0.9, orden=4))
 # Calle transversal delantera: línea discontinua central
-lineas.append({"a": [X0 - 0.4, 22.5, 0], "b": [FIN_RACK + 0.4, 22.5, 0], "st": "#E5E7EB", "sw": 0.06, "op": 0.35, "da": [10, 8]})
+lineas.append({"a": [X0 - 0.4, YF - 1.5, 0], "b": [FIN_RACK + 0.4, YF - 1.5, 0], "st": "#E5E7EB", "sw": 0.06, "op": 0.35, "da": [10, 8]})
 # Zona de carga de baterías a la derecha
-planos.append(rect(42.4, 3.0, 44.6, 12.5, fill="#14B8A6", op=0.08, st="#14B8A6", sw=0.05, orden=2))
+FIN_BATERIAS = min(12.5, YF - 1.0)
+planos.append(rect(W - 2.6, 3.0, W - 0.4, FIN_BATERIAS, fill="#14B8A6", op=0.08, st="#14B8A6", sw=0.05, orden=2))
 
 # Patio: plazas de cada muelle
 for mid, mx, entrada in MUELLES:
@@ -150,11 +194,11 @@ for i in range(1, int(W / 1.6)):
     x = i * 1.6
     fijas.append(caja(x, 0, 0, 0.07, 0.07, ALTO_MURO - 0.25, C["nervio"], K0 + 10 + x))
     if i < int(W / 1.6) - 1:
-        fijas.append(caja(x + 0.12, 0.02, 6.35, 1.42, 0, 0.95, C["ventana"], K0 + 10.5 + x, f="i", o=0.75))
+        fijas.append(caja(x + 0.12, 0.02, ALTO_MURO - 1.85, 1.42, 0, 0.95, C["ventana"], K0 + 10.5 + x, f="i", o=0.75))
 for j in range(1, int(D / 1.6)):
     y = j * 1.6
     fijas.append(caja(0, y, 0, 0.07, 0.07, ALTO_MURO - 0.25, C["nervio"], K0 + 5 - y / 100))
-    fijas.append(caja(0.02, y + 0.12, 6.35, 0, 1.42, 0.95, C["ventana"], K0 + 5.5 - y / 100, f="d", o=0.75))
+    fijas.append(caja(0.02, y + 0.12, ALTO_MURO - 1.85, 0, 1.42, 0.95, C["ventana"], K0 + 5.5 - y / 100, f="d", o=0.75))
 
 # ------------------------------------------------------------------ estanterías
 for p, y0, lado in FILAS:
@@ -165,7 +209,7 @@ for p, y0, lado in FILAS:
         fijas.append(caja(b - 0.06, y0, 0, 0.12, 0.1, ALTO_RACK, C["puntal"], kb + b * 10))
         fijas.append(caja(b - 0.06, y1 - 0.1, 0, 0.12, 0.1, ALTO_RACK, C["puntal"], kb + 9e6 + b * 10))
     for b in (X0, FIN_RACK):   # travesaños del bastidor de cabecera
-        for zz in (0.6, 2.3, 4.0, 5.7):
+        for zz in [r3(0.6 + 1.7 * i) for i in range(int((ALTO_RACK - 1.1) / 1.7) + 1)]:
             fijas.append(caja(b - 0.04, y0 + 0.1, zz, 0.08, FONDO_RACK - 0.2, 0.06, C["puntal"], kb + 9e6 + b * 10 + 1))
     for yy in (y0 - 0.12, y1 - 0.1):   # protectores amarillos de cabecera
         fijas.append(caja(X0 - 0.3, yy, 0, 0.42, 0.22, 0.55, C["protector"], kb + (9e6 if yy > y0 else -1) + 5))
@@ -191,16 +235,16 @@ for mid, mx, entrada in MUELLES:
     fijas.append(caja(mx + 0.95, D + 0.3, 0, 0.25, 0.18, 0.55, C["oscuro"], KM + mx * 10 + 3))
 
 # Cargadores de baterías y dos carretillas cargando
-for yy in (4.0, 7.0, 10.0):
-    fijas.append(caja(44.2, yy, 0, 0.5, 0.8, 1.4, C["cargador"], 1.5e7 + yy))
+for yy in [v for v in (4.0, 7.0, 10.0) if v + 0.8 <= FIN_BATERIAS]:
+    fijas.append(caja(W - 0.8, yy, 0, 0.5, 0.8, 1.4, C["cargador"], 1.5e7 + yy))
 
 # ------------------------------------------------------------------ textos fijos
 # (Los nombres de zona no se pintan en el muro: chocaban con las etiquetas de ocupación de cada fila)
-textos.append({"x": 4.0, "y": 23.25, "z": 0, "t": "PLAYA DE ENTRADA", "sz": 0.5, "ang": 26.57,
+textos.append({"x": r3(X_E0 + 0.4), "y": r3(YF - 0.75), "z": 0, "t": "PLAYA DE ENTRADA", "sz": 0.5, "ang": 26.57,
                "col": "#5EEAD4", "op": 0.75, "w": "bold", "al": "left"})
-textos.append({"x": 24.6, "y": 23.25, "z": 0, "t": "PLAYA DE SALIDA", "sz": 0.5, "ang": 26.57,
+textos.append({"x": r3(X_S0 + 0.3), "y": r3(YF - 0.75), "z": 0, "t": "PLAYA DE SALIDA", "sz": 0.5, "ang": 26.57,
                "col": "#FDA4AF", "op": 0.75, "w": "bold", "al": "left"})
-textos.append({"x": 42.6, "y": 2.6, "z": 0, "t": "CARGA DE BATERÍAS", "sz": 0.42, "ang": -26.57,
+textos.append({"x": r3(W - 2.4), "y": 2.6, "z": 0, "t": "CARGA DE BATERÍAS", "sz": 0.42, "ang": -26.57,
                "col": "#5EEAD4", "op": 0.6, "w": "normal", "al": "left"})
 for mid, mx, entrada in MUELLES:
     textos.append({"x": mx, "y": D + 0.3, "z": 3.95, "t": mid, "sz": 0.5, "ang": 0,
@@ -217,7 +261,7 @@ def esquinas(bx):
 
 
 pts = [p for bx in base + fijas for p in esquinas(bx)]
-pts += [(W, D_PATIO, 0), (0, D_PATIO, 0), (20, D_PATIO, 3.0)]
+pts += [(W, D_PATIO, 0), (0, D_PATIO, 0)]
 us = [x - y for x, y, z in pts]
 vs = [(x + y) / 2 - z * ZF for x, y, z in pts]
 U0, U1, V0, V1 = min(us) - 0.6, max(us) + 0.6, min(vs) - 1.2, max(vs) + 1.6
@@ -238,21 +282,17 @@ def arr(colores):
     return "[" + ", ".join(f"'{c}'" for c in colores) + "]"
 
 
-# Paletas por modo de color: [superior, derecha, izquierda]
+# Paletas por modo de color: [superior, derecha, izquierda]. Las de categoría no están aquí: llegan
+# de los datos (medida «Paleta de categorías», tabla Categorías del modelo).
 ABC = {"A": ["#7AF0DC", "#2BC8B2", "#159A89"], "B": ["#B4C0FF", "#7C8CF6", "#5865D6"],
        "C": ["#F3B5FF", "#D57BEA", "#A855C7"]}
 DIAS = [["#7AF0DC", "#2BC8B2", "#159A89"], ["#FDE68A", "#FBBF24", "#C98A0B"], ["#FDA4AF", "#F43F5E", "#BE123C"]]
-CATEG = {"Bebidas": ["#93DDFD", "#38BDF8", "#0284C7"], "Alimentación": ["#FCD38D", "#F59E0B", "#B45309"],
-         "Droguería": ["#9AF0B6", "#22C55E", "#15803D"], "Higiene y belleza": ["#F9B6D6", "#EC4899", "#BE185D"],
-         "Mascotas": ["#FDC28E", "#F97316", "#C2410C"], "Bazar y hogar": ["#C9BEFF", "#8B5CF6", "#6D28D9"],
-         "Temporada Navidad": ["#FCA5A5", "#EF4444", "#B91C1C"]}
 FANTASMA = ["#94A3B8", "#64748B", "#475569"]
 MADERA = ["#C99B62", "#A77A46", "#7C5831"]
 
 expr_tono = (
     "modo == 'dias' ? (datum.dias < 7 ? " + arr(DIAS[0]) + " : datum.dias <= 21 ? " + arr(DIAS[1]) + " : " + arr(DIAS[2]) + ")"
-    " : modo == 'categoria' ? (" + " : ".join(f"datum.categoria == '{k}' ? {arr(v)}" for k, v in list(CATEG.items())[:-1])
-    + " : " + arr(list(CATEG.values())[-1]) + ")"
+    " : modo == 'categoria' ? (datum.tonosCat || " + arr(FANTASMA) + ")"
     " : (datum.clase == 'A' ? " + arr(ABC["A"]) + " : datum.clase == 'B' ? " + arr(ABC["B"]) + " : " + arr(ABC["C"]) + ")"
 )
 
@@ -308,13 +348,17 @@ expr_partes_carretilla = "[" + ", ".join([
 ]) + "]"
 
 # Palets de playa: dos columnas por tres filas en cada carril; datum.mx = centro del carril
+Y_PLAYA = r3(YF + 0.35)
 expr_partes_playa = "[" + ", ".join([
-    obj(x="datum.mx - 1.02 + datum.col * 1.1", y="24.35 + datum.fila * 1.05", z="0", dx="0.88", dy="0.9", dz="0.14",
-        c=arr(MADERA), k="2e8 + (24.35 + datum.fila * 1.05) * 1000 + (datum.mx + datum.col) * 10", f="'tdi'", o="1", p="'base'"),
-    obj(x="datum.mx - 0.98 + datum.col * 1.1", y="24.39 + datum.fila * 1.05", z="0.14", dx="0.8", dy="0.82", dz="0.66",
+    obj(x="datum.mx - 1.02 + datum.col * 1.1", y=f"{Y_PLAYA} + datum.fila * 1.05", z="0", dx="0.88", dy="0.9", dz="0.14",
+        c=arr(MADERA), k=f"2e8 + ({Y_PLAYA} + datum.fila * 1.05) * 1000 + (datum.mx + datum.col) * 10", f="'tdi'", o="1", p="'base'"),
+    obj(x="datum.mx - 0.98 + datum.col * 1.1", y=f"{r3(Y_PLAYA + 0.04)} + datum.fila * 1.05", z="0.14", dx="0.8", dy="0.82", dz="0.66",
         c="datum.entrada ? ['#E8C995', '#CDA56C', '#A27F4B'] : ['#EEF3F9', '#CDD6E2', '#A9B6C8']",
-        k="2e8 + (24.35 + datum.fila * 1.05) * 1000 + (datum.mx + datum.col) * 10 + 1", f="'tdi'", o="1", p="'cargaPlaya'"),
+        k=f"2e8 + ({Y_PLAYA} + datum.fila * 1.05) * 1000 + (datum.mx + datum.col) * 10 + 1", f="'tdi'", o="1", p="'cargaPlaya'"),
 ]) + "]"
+CAP_E, CAP_S = 6 * N_E, 6 * N_S          # seis palets por carril de playa
+IDS_E = "[" + ", ".join(f"'{m}'" for m in CFG.muelles_entrada) + "]"
+IDS_S = "[" + ", ".join(f"'{m}'" for m in CFG.muelles_salida) + "]"
 
 # ------------------------------------------------------------------ especificación
 muelles_vals = [{"id": m, "X": x, "entrada": e} for m, x, e in MUELLES]
@@ -366,7 +410,7 @@ puntos_plano = " + ".join(
 
 spec = {
     "$schema": "https://vega.github.io/schema/vega/v5.json",
-    "description": "Almacén isométrico CD-01 (datos ficticios). Generado por deneb/construir_escena.py: no editar a mano.",
+    "description": f"{CFG.nombre}: almacén isométrico. Generado por deneb/construir_escena.py a partir de {CFG.ruta.name}: no editar a mano.",
     "background": "transparent",
     "padding": 0,
     "autosize": "none",
@@ -376,8 +420,10 @@ spec = {
         {"name": "ox", "update": f"(width - {DU:.2f} * s) / 2 - ({U0:.2f}) * s"},
         {"name": "oy", "update": f"(height - {DV:.2f} * s) / 2 - ({V0:.2f}) * s"},
         {"name": "muelles", "update": "length(data('dataset')) && data('dataset')[0]['Muelles con camión'] ? split(data('dataset')[0]['Muelles con camión'], ',') : []"},
-        {"name": "nEntrada", "update": "length(data('dataset')) ? min(36, data('dataset')[0]['Entradas en la hora'] || 0) : 0"},
-        {"name": "nSalida", "update": "length(data('dataset')) ? min(36, data('dataset')[0]['Salidas en la hora'] || 0) : 0"},
+        {"name": "nEntrada", "update": f"length(data('dataset')) ? min({CAP_E}, data('dataset')[0]['Entradas en la hora'] || 0) : 0"},
+        {"name": "nSalida", "update": f"length(data('dataset')) ? min({CAP_S}, data('dataset')[0]['Salidas en la hora'] || 0) : 0"},
+        # Categorías y sus tres tonos, en un texto «#claro,#medio,#oscuroNombre|…» (medida Paleta de categorías)
+        {"name": "paletaCat", "update": "length(data('dataset')) && data('dataset')[0]['Paleta de categorías'] ? data('dataset')[0]['Paleta de categorías'] : ''"},
         {"name": "foco", "update": "length(data('dataset')) && data('dataset')[0]['Fila en foco'] ? data('dataset')[0]['Fila en foco'] : 'Todas'"},
         {"name": "bandaFoco", "update": "foco == 'Todas' ? 99 : indexof(" + json.dumps([p for p, _, _ in FILAS]).replace('"', "'") + ", foco) + 1"},
         {"name": "encima", "value": None, "on": [
@@ -387,6 +433,12 @@ spec = {
     "data": [
         {"name": "dataset"},
         {"name": "filas", "values": filas_vals},
+        {"name": "categorias", "values": [{}], "transform": [
+            {"type": "formula", "as": "lista", "expr": "paletaCat ? split(paletaCat, '|') : []"},
+            {"type": "flatten", "fields": ["lista"], "as": ["item"]},
+            {"type": "formula", "as": "tonos", "expr": "split(substring(datum.item, 0, 23), ',')"},
+            {"type": "formula", "as": "categoria", "expr": "substring(datum.item, 23)"},
+        ]},
         {"name": "puertas", "values": muelles_vals, "transform": [
             {"type": "formula", "as": "ocupado", "expr": "indexof(muelles, datum.id) >= 0"}]},
         {"name": "huecos", "source": "dataset", "transform": [
@@ -404,6 +456,8 @@ spec = {
                                            "Hueco", "Posición"],
              "as": ["id", "Nivel", "sx", "y0", "z0", "banda", "estado", "activo", "mov", "producto", "clase", "categoria", "dias",
                     "Hueco", "pos"]},
+            {"type": "lookup", "from": "categorias", "key": "categoria", "fields": ["categoria"], "values": ["tonos"],
+             "as": ["tonosCat"]},
             {"type": "formula", "as": "alto", "expr": "(datum.clase == 'A' ? 0.7 : datum.clase == 'B' ? 0.63 : 0.56) - ((datum.Hueco * 7 + datum.pos * 13 + datum.Nivel * 5) % 4) * 0.025"},
             {"type": "formula", "as": "tono", "expr": expr_tono},
             {"type": "formula", "as": "partes", "expr": expr_partes_palet},
@@ -438,14 +492,16 @@ spec = {
                                                        k=f"{2.6e8} + datum.X * 10", f="'tdi'", o="1", p="'piloto'")},
         ]},
         {"name": "playa", "transform": [
-            {"type": "sequence", "start": 0, "stop": 72, "as": "i"},
-            {"type": "formula", "as": "entrada", "expr": "datum.i < 36"},
-            {"type": "formula", "as": "j", "expr": "datum.i % 36"},
+            {"type": "sequence", "start": 0, "stop": CAP_E + CAP_S, "as": "i"},
+            {"type": "formula", "as": "entrada", "expr": f"datum.i < {CAP_E}"},
+            {"type": "formula", "as": "j", "expr": f"datum.entrada ? datum.i : datum.i - {CAP_E}"},
             {"type": "filter", "expr": "datum.entrada ? datum.j < nEntrada : datum.j < nSalida"},
-            {"type": "formula", "as": "carril", "expr": "datum.j % 6"},
-            {"type": "formula", "as": "hueco", "expr": "floor(datum.j / 6)"},
+            {"type": "formula", "as": "carril", "expr": f"datum.j % (datum.entrada ? {N_E} : {N_S})"},
+            {"type": "formula", "as": "hueco", "expr": f"floor(datum.j / (datum.entrada ? {N_E} : {N_S}))"},
             {"type": "formula", "as": "col", "expr": "datum.hueco % 2"},
             {"type": "formula", "as": "fila", "expr": "floor(datum.hueco / 2)"},
+            # La playa necesita la clave del muelle de su carril
+            {"type": "formula", "as": "clave", "expr": f"datum.entrada ? {IDS_E}[datum.carril] : {IDS_S}[datum.carril]"},
             {"type": "lookup", "from": "puertas", "key": "id", "fields": ["clave"], "values": ["X"], "as": ["mx"],
              "default": 0},
             # Ficha de los palets de playa (aún sin ubicación ni producto asignado en la vista)
@@ -467,9 +523,9 @@ spec = {
         ]},
         {"name": "escena", "source": ["fijasCaras", "palet", "carretillas", "camiones", "pilotos", "playa"],
          "transform": trans_caja + trans_caras + [
-             # Banda de dibujo = fila de estanterías (1 = H, al fondo … 8 = A, junto a los muelles)
+             # Banda de dibujo = fila de estanterías (1 = la del fondo … N = la de junto a los muelles)
              {"type": "formula", "as": "banda", "expr": "floor(datum.b.k / 1e7)"},
-             {"type": "formula", "as": "fantasma", "expr": "datum.banda >= 1 && datum.banda <= 8 && datum.banda > bandaFoco"},
+             {"type": "formula", "as": "fantasma", "expr": f"datum.banda >= 1 && datum.banda <= {N_FILAS} && datum.banda > bandaFoco"},
          ]},
         # Modo corte: las filas que quedan delante de la fila en foco se dibujan aparte, en fantasma
         {"name": "vivas", "source": "escena", "transform": [
@@ -496,10 +552,6 @@ datos = spec["data"]
 i_esc = next(i for i, d in enumerate(datos) if d["name"] == "escena")
 i_fij = next(i for i, d in enumerate(datos) if d["name"] == "fijasCaras")
 datos.insert(i_esc, datos.pop(i_fij))
-# La playa necesita la clave del muelle de su carril
-playa = next(d for d in datos if d["name"] == "playa")
-playa["transform"].insert(8, {"type": "formula", "as": "clave",
-                              "expr": "(datum.entrada ? 'E' : 'S') + (datum.carril + 1)"})
 
 sombra_dyn = ("'M' + (ox + (datum.x0 - datum.y0) * s) + ',' + (oy + (datum.x0 + datum.y0) / 2 * s)"
               f" + 'L' + (ox + (datum.x1 - datum.y0) * s) + ',' + (oy + (datum.x1 + datum.y0) / 2 * s)"
@@ -572,7 +624,7 @@ spec["marks"] = [
 
 # Etiqueta flotante de ocupación por fila, sobre la cabecera de cada estantería
 PX = "ox + (datum.xr - datum.y0 - 0.55) * s"
-PY = f"oy + ((datum.xr + datum.y0 + 0.55) / 2 - 7.7 * {ZF}) * s"
+PY = f"oy + ((datum.xr + datum.y0 + 0.55) / 2 - {r3(ALTO_RACK + 1.15)} * {ZF}) * s"
 COLOR_PCT = "datum.pct >= 0.9 ? '{r}' : datum.pct >= 0.75 ? '{a}' : '{v}'"
 spec["marks"] += [
     {"type": "rule", "from": {"data": "filasOcupacion"}, "encode": {"update": {
@@ -601,5 +653,6 @@ spec["marks"] += [
 
 SALIDA.write_text(json.dumps(spec, ensure_ascii=False, indent=1), encoding="utf-8")
 n_fijas = sum(len(x["b"]["f"]) for x in fijas)
-print(f"Escena escrita: {len(fijas)} cajas fijas ({n_fijas} caras), {len(planos)} planos, {len(lineas)} líneas, "
-      f"{len(textos)} textos. Encuadre U {U0:.1f}..{U1:.1f}  V {V0:.1f}..{V1:.1f}  ({DU:.1f} x {DV:.1f})")
+print(f"Escena escrita en {SALIDA.name}: {N_FILAS} filas, {N_E}+{N_S} muelles, edificio {W:g} x {D:g}. "
+      f"{len(fijas)} cajas fijas ({n_fijas} caras), {len(planos)} planos, {len(lineas)} líneas, {len(textos)} textos. "
+      f"Encuadre U {U0:.1f}..{U1:.1f}  V {V0:.1f}..{V1:.1f}  ({DU:.1f} x {DV:.1f})")

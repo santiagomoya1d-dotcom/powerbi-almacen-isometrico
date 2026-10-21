@@ -6,7 +6,10 @@ Todo es inventado: productos, proveedores, operarios, destinos y cifras.
 El almacén se simula palet a palet y por eventos en el tiempo, de modo que la
 ocupación, las entradas, las salidas y los camiones cuadran entre sí.
 
-Uso:     python generar_datos.py
+La forma del almacén (filas, huecos, niveles, muelles, zonas) y las categorías salen de
+almacen.config.json. Con la misma configuración y la misma semilla, el resultado es siempre el mismo.
+
+Uso:     python generar_datos.py [--config otra.config.json] [--salida carpeta]
 Salida:  ../datos/*.csv  (UTF-8, separador coma, decimales con punto)
 """
 from __future__ import annotations
@@ -20,13 +23,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-SEMILLA = 2026
-INICIO = date(2025, 10, 1)
-FIN = date(2026, 9, 30)
-CARPETA = Path(__file__).resolve().parent.parent / "datos"
-rng = np.random.default_rng(SEMILLA)
+from configuracion import DATOS, argumentos, cargar, escribir_tablas_de_configuracion, filas_muelles
 
 # ---------------------------------------------------------------- calendario
+# Festivos y campañas del año simulado (1/10/2025 – 30/9/2026). Si cambias las fechas de la
+# simulación en la configuración, revisa estas fechas.
 FESTIVOS = {
     date(2025, 10, 12): "Fiesta Nacional",
     date(2025, 11, 1): "Todos los Santos",
@@ -60,67 +61,7 @@ def temporada(d: date) -> str:
     return "Normal"
 
 
-# ------------------------------------------------------------------- layout
-# 8 filas de estanterías (A, la más cercana a los muelles), 12 huecos por fila,
-# 6 niveles y 3 posiciones de palet por hueco: 1.728 ubicaciones.
-PASILLOS = "ABCDEFGH"
-HUECOS, NIVELES, POSICIONES = 12, 6, 3
-# Coordenadas en "unidades de palet" para el dibujo isométrico.
-Y_FILA = {"H": 1.0, "G": 2.1, "F": 5.7, "E": 6.8, "D": 10.4, "C": 11.5, "B": 15.1, "A": 16.2}
-ZONA_DE = {"A": "Z1", "B": "Z1", "C": "Z2", "D": "Z2", "E": "Z2", "F": "Z2", "G": "Z3", "H": "Z3"}
-ZONAS = [
-    ("Z1", "Z1 · Alta rotación", 1, "Filas A y B, junto a los muelles"),
-    ("Z2", "Z2 · Rotación media", 2, "Filas C a F"),
-    ("Z3", "Z3 · Reserva", 3, "Filas G y H, al fondo"),
-]
-ZONA_PREF = {"A": ["Z1", "Z2", "Z3"], "B": ["Z2", "Z1", "Z3"], "C": ["Z3", "Z2", "Z1"]}
-
-
-def x_posicion(hueco: int, pos: int) -> float:
-    return round(1.5 + (hueco - 1) * 3.15 + 0.15 + (pos - 1) * 1.0, 2)
-
-
-# ---------------------------------------------------------------- productos
-TEMPORADA_MES = {
-    "Bebidas": {1: .8, 2: .85, 3: .95, 4: 1.05, 5: 1.15, 6: 1.4, 7: 1.55, 8: 1.45, 9: 1.1, 10: .95, 11: .95, 12: 1.2},
-    "Alimentación": {1: .9, 2: .95, 3: 1, 4: 1.05, 5: 1, 6: .95, 7: .9, 8: .8, 9: 1, 10: 1, 11: 1.05, 12: 1.3},
-    "Droguería": {1: .95, 2: .95, 3: 1.05, 4: 1.05, 5: 1, 6: 1, 7: .95, 8: .85, 9: 1, 10: 1, 11: 1.1, 12: 1.1},
-    "Higiene y belleza": {1: .9, 2: .9, 3: .95, 4: 1, 5: 1.05, 6: 1.15, 7: 1.2, 8: 1, 9: .95, 10: .95, 11: 1.15, 12: 1.3},
-    "Mascotas": {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: .95, 8: .9, 9: 1, 10: 1, 11: 1.05, 12: 1.1},
-    "Bazar y hogar": {1: .8, 2: .85, 3: .95, 4: 1, 5: 1, 6: 1, 7: .9, 8: .8, 9: 1, 10: 1, 11: 1.4, 12: 1.5},
-    "Temporada Navidad": {1: .25, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: .02, 10: .2, 11: 1.0, 12: 2.4},
-}
-CATEGORIAS = {
-    # n SKU, peso en volumen, valor €/palet, nº proveedores, nombres base
-    "Bebidas": (58, .26, (250, 450), 3, [
-        "Agua mineral 1,5 L", "Agua con gas 1 L", "Refresco de cola 2 L", "Refresco de naranja 2 L",
-        "Zumo de naranja 1 L", "Cerveza lata 33 cl", "Cerveza sin alcohol 33 cl", "Bebida isotónica 50 cl",
-        "Té frío al limón 1,5 L", "Gaseosa 1,5 L"]),
-    "Alimentación": (75, .28, (400, 1200), 4, [
-        "Arroz redondo 1 kg", "Espaguetis 500 g", "Macarrones 500 g", "Aceite de oliva 1 L",
-        "Aceite de girasol 1 L", "Tomate triturado 400 g", "Garbanzos cocidos 400 g", "Galletas 800 g",
-        "Cereales de desayuno 500 g", "Leche UHT 1 L", "Azúcar 1 kg", "Harina de trigo 1 kg",
-        "Atún en aceite 3x80 g", "Café molido 250 g", "Cacao soluble 400 g"]),
-    "Droguería": (46, .14, (500, 1100), 3, [
-        "Detergente líquido 3 L", "Detergente en cápsulas 40 uds", "Suavizante 2 L", "Lavavajillas a mano 1 L",
-        "Pastillas lavavajillas 50 uds", "Lejía 2 L", "Limpiador multiusos 750 ml", "Papel higiénico 12 rollos",
-        "Papel de cocina 4 rollos", "Fregasuelos 1,5 L"]),
-    "Higiene y belleza": (42, .11, (900, 2500), 3, [
-        "Gel de ducha 750 ml", "Champú 400 ml", "Pasta de dientes 75 ml", "Desodorante 200 ml",
-        "Pañales talla 4", "Toallitas húmedas 80 uds", "Protector solar 200 ml", "Crema hidratante 400 ml",
-        "Jabón de manos 500 ml"]),
-    "Mascotas": (25, .06, (500, 900), 2, [
-        "Pienso perro adulto 15 kg", "Pienso gato 4 kg", "Arena para gatos 10 L",
-        "Comida húmeda gato 12x85 g", "Snacks dentales perro"]),
-    "Bazar y hogar": (34, .09, (600, 1800), 3, [
-        "Bolsas de basura 30 L", "Papel de aluminio 30 m", "Film transparente 50 m", "Pilas AA 8 uds",
-        "Bombillas LED 3 uds", "Velas aromáticas", "Vasos desechables 50 uds", "Servilletas 100 uds",
-        "Menaje de cocina"]),
-    "Temporada Navidad": (20, .06, (900, 2600), 2, [
-        "Turrón duro 300 g", "Turrón blando 300 g", "Polvorones 400 g", "Mantecados surtidos 1 kg",
-        "Cava brut 75 cl", "Bombones surtidos 400 g", "Lote navideño", "Mazapán 250 g"]),
-}
-VOLUMEN_DIARIO = 160  # palets/día de salida esperados de media en días abiertos
+# ------------------------------------------------------------- política de stock
 # Política de reposición por clase (revisión diaria, el proveedor entrega solo ciertos días):
 # se protege la demanda hasta la llegada del pedido que se podría lanzar mañana, más unos
 # días de seguridad y un colchón estadístico (z · raíz de la demanda esperada).
@@ -140,8 +81,6 @@ DESTINOS = [
     ("D09", "Aragón", 41.6488, -0.8891, .05),
     ("D10", "Región de Murcia", 37.9922, -1.1307, .04),
 ]
-PALETS_CAMION = 33
-CALENTAMIENTO = 28  # días simulados antes de INICIO que no se registran
 
 
 def temporada_valor(tabla: dict, d: date) -> float:
@@ -159,15 +98,28 @@ def temporada_valor(tabla: dict, d: date) -> float:
     return tabla[m0] * (1 - w) + tabla[m] * w
 
 
-def factor_extra(cat: str, d: date) -> float:
+def factor_extra(sim: dict, d: date) -> float:
+    """Picos de Black Friday y de la semana antes de Navidad, y meses fuera de temporada, de una categoría."""
     f = 1.0
     if BLACK_FRIDAY[0] <= d <= BLACK_FRIDAY[1]:
-        f *= {"Bazar y hogar": 1.45, "Higiene y belleza": 1.3, "Droguería": 1.25, "Bebidas": 1.1}.get(cat, 1.05)
+        f *= sim.get("black_friday", 1.05)
     if date(2025, 12, 15) <= d <= date(2025, 12, 23):
-        f *= {"Alimentación": 1.25, "Bebidas": 1.2, "Temporada Navidad": 1.4}.get(cat, 1.0)
-    if cat == "Temporada Navidad" and date(2026, 1, 7) <= d < date(2026, 9, 1):
-        f *= 0.1
+        f *= sim.get("navidad", 1.0)
+    fuera = sim.get("fuera_de_temporada")
+    if fuera and date.fromisoformat(fuera["desde"]) <= d <= date.fromisoformat(fuera["hasta"]):
+        f *= fuera["factor"]
     return f
+
+
+def parametros_categoria(cat, n_categorias: int) -> tuple:
+    """(nº de referencias, peso en volumen, valor €/palet, nº de proveedores, nombres base, estacionalidad).
+    Lo que falte en la configuración toma un valor neutro."""
+    sim = cat.simulacion
+    nombres = sim.get("productos") or [f"{cat.nombre} {i + 1}" for i in range(5)]
+    estac = sim.get("estacionalidad") or [1] * 12
+    return (int(sim.get("referencias", 20)), float(sim.get("peso", 1 / n_categorias)),
+            tuple(sim.get("valor_palet", (500, 1500))), int(sim.get("proveedores", 2)), nombres,
+            {m + 1: v for m, v in enumerate(estac)})
 
 
 def a_texto(t: datetime) -> str:
@@ -175,7 +127,32 @@ def a_texto(t: datetime) -> str:
 
 
 def main() -> None:
+    args = argumentos("Simula un año del almacén y escribe los CSV.",
+                      "carpeta de los CSV (por defecto, datos/)").parse_args()
+    cfg = cargar(args.config)
+    CARPETA = Path(args.salida) if args.salida else DATOS
     CARPETA.mkdir(parents=True, exist_ok=True)
+    sim = cfg.simulacion
+    INICIO, FIN = sim["inicio"], sim["fin"]
+    CALENTAMIENTO, PALETS_CAMION = sim["calentamiento"], sim["palets_por_camion"]
+    VOLUMEN_DIARIO = sim["palets_por_dia"]   # palets/día de salida esperados de media en días abiertos
+    rng = np.random.default_rng(sim["semilla"])
+
+    # Forma del almacén: filas de la más cercana a los muelles (A) a la más lejana
+    PASILLOS = cfg.filas
+    HUECOS, NIVELES, POSICIONES = cfg.huecos, cfg.niveles, cfg.posiciones
+    ZONA_DE = cfg.zona_de
+    ZONAS = [(z.id, f"{z.id} · {z.nombre}", z.orden, z.descripcion) for z in cfg.zonas]
+    # Zona preferida por clase: A, de delante hacia atrás; C, de atrás hacia delante; B, desde el centro
+    ids = [z.id for z in cfg.zonas]
+    centro = (len(ids) - 1) / 2
+    ZONA_PREF = {"A": ids, "B": sorted(ids, key=lambda z: (abs(ids.index(z) - centro), ids.index(z))),
+                 "C": ids[::-1]}
+    CATEGORIAS = {k.nombre: parametros_categoria(k, len(cfg.categorias)) for k in cfg.categorias}
+    TEMPORADA_MES = {k: v[5] for k, v in CATEGORIAS.items()}
+    SIM_CAT = {k.nombre: k.simulacion for k in cfg.categorias}
+    MUELLES_E, MUELLES_S = cfg.muelles_entrada, cfg.muelles_salida
+
     # La simulación arranca CALENTAMIENTO días antes de INICIO y no registra nada hasta
     # INICIO: así el 1 de octubre ya hay pedidos en camino y el stock está asentado.
     n_dias = (FIN - INICIO).days + 1
@@ -209,7 +186,6 @@ def main() -> None:
                     slots.append({
                         "UbicacionID": f"{p}-{h:02d}-{n}-{q}", "Pasillo": p, "Orden pasillo": i + 1,
                         "Hueco": h, "Nivel": n, "Posición": q, "ZonaID": ZONA_DE[p],
-                        "X": x_posicion(h, q), "Y": Y_FILA[p], "Z": round((n - 1) * 0.95, 2),
                     })
     CAP = len(slots)
     pasillo_idx = np.array([PASILLOS.index(s["Pasillo"]) for s in slots])
@@ -247,7 +223,7 @@ def main() -> None:
     n_prov = 0
     sku_num = rng.choice(np.arange(10000, 99999), size=sum(c[0] for c in CATEGORIAS.values()), replace=False)
     j = 0
-    for cat, (n, peso, (vmin, vmax), nprov, nombres) in CATEGORIAS.items():
+    for cat, (n, peso, (vmin, vmax), nprov, nombres, _) in CATEGORIAS.items():
         ids = []
         for _ in range(nprov):
             n_prov += 1
@@ -271,7 +247,8 @@ def main() -> None:
     prov_de = {p["ProveedorID"]: p for p in proveedores}
     n_sku = len(productos)
     cats = sorted(CATEGORIAS)
-    estac = {c: np.array([temporada_valor(TEMPORADA_MES[c], d) * factor_extra(c, d) for d in dias]) for c in cats}
+    estac = {c: np.array([temporada_valor(TEMPORADA_MES[c], d) * factor_extra(SIM_CAT[c], d) for d in dias])
+             for c in cats}
     wd = np.array([FACTOR_DIA[d.weekday()] if abierto(d) else 0.0 for d in dias])
     # Escala: que la salida media en días abiertos sea VOLUMEN_DIARIO
     perfil = np.array([estac[p["Categoría"]] * p["_peso"] for p in productos])  # (sku, día)
@@ -333,8 +310,8 @@ def main() -> None:
     k = 1
     # Mañana: descarga y ubicación de lo que entra + primeras preparaciones. Tarde: preparación
     # de pedidos; si queda algo por ubicar por la tarde, lo hace un preparador.
-    for turno, roles in (("Mañana", (("Carretillero", 4), ("Preparador", 3))), ("Tarde", (("Preparador", 4),))):
-        for rol, n in roles:
+    for turno, roles in sim["operarios"].items():
+        for rol, n in roles.items():
             for _ in range(n):
                 operarios.append({"OperarioID": f"OP-{k:02d}", "Operario": f"Operario {k:02d}",
                                   "Turno": turno, "Rol": rol,
@@ -353,10 +330,7 @@ def main() -> None:
         g, w = grupos[("Mañana" if t.hour < 14 else "Tarde", rol)]
         return g[rng.choice(len(g), p=w)]
 
-    muelles = ([{"MuelleID": f"E{i + 1}", "Muelle": f"Muelle E{i + 1}", "Tipo": "Entrada", "Orden": i + 1,
-                 "X": 2.5 + i * 3.0, "Y": 22.0} for i in range(6)] +
-               [{"MuelleID": f"S{i + 1}", "Muelle": f"Muelle S{i + 1}", "Tipo": "Salida", "Orden": i + 7,
-                 "X": 22.5 + i * 3.0, "Y": 22.0} for i in range(6)])
+    muelles = filas_muelles(cfg)
 
     # ------------------------------------------------------------ simulación
     movs, camiones, stock_diario, ocup_horaria = [], [], [], []
@@ -441,7 +415,7 @@ def main() -> None:
                     viajes.append((pid, lista[i:i + PALETS_CAMION]))
             rng.shuffle(viajes)
             ini, fin = (6.0, 10.5) if sabado else (6.0, 13.0)
-            libre_muelle = {f"E{i + 1}": dt0 for i in range(6)}
+            libre_muelle = {m: dt0 for m in MUELLES_E}
             plan = []
             for n, (pid, carga) in enumerate(viajes):
                 prev = dt0 + timedelta(hours=ini + (fin - ini) * (n + rng.uniform(.1, .9)) / max(1, len(viajes)))
@@ -480,7 +454,7 @@ def main() -> None:
                 rng.shuffle(lista)
                 for i in range(0, len(lista), PALETS_CAMION):
                     viajes.append((k_d, lista[i:i + PALETS_CAMION]))
-            libre_muelle_s = {f"S{i + 1}": dt0 for i in range(6)}
+            libre_muelle_s = {m: dt0 for m in MUELLES_S}
             plan = []
             for k_d, carga in viajes:
                 if sabado:
@@ -605,7 +579,7 @@ def main() -> None:
     def guardar(nombre: str, filas: list, columnas: list | None = None) -> pd.DataFrame:
         df = pd.DataFrame(filas)
         df = df[[c for c in (columnas or df.columns) if not str(c).startswith("_")]]
-        df.to_csv(CARPETA / f"{nombre}.csv", index=False, encoding="utf-8")
+        df.to_csv(CARPETA / f"{nombre}.csv", index=False, encoding="utf-8", lineterminator="\r\n")
         print(f"{nombre:<22} {len(df):>8} filas")
         return df
 
@@ -622,7 +596,7 @@ def main() -> None:
     guardar("Horas", horas)
     guardar("Zonas", [{"ZonaID": z, "Zona": n, "Orden": o, "Descripción": t,
                        "Capacidad (palets)": sum(1 for s in slots if s["ZonaID"] == z)} for z, n, o, t in ZONAS])
-    guardar("Pasillos", [{"Pasillo": p, "Orden pasillo": i + 1, "ZonaID": ZONA_DE[p], "Y": Y_FILA[p],
+    guardar("Pasillos", [{"Pasillo": p, "Orden pasillo": i + 1, "ZonaID": ZONA_DE[p],
                           "Capacidad (palets)": HUECOS * NIVELES * POSICIONES} for i, p in enumerate(PASILLOS)])
     guardar("Ubicaciones", slots)
     guardar("Productos", productos)
@@ -633,6 +607,8 @@ def main() -> None:
     guardar("Camiones", [c for c in camiones if c["Fecha"] >= INICIO.isoformat()])
     guardar("StockDiario", stock_diario)
     guardar("OcupacionHoraria", ocup_horaria)
+    escribir_tablas_de_configuracion(cfg, CARPETA)
+    print(f"{'Almacen, Categorias':<22} desde {cfg.ruta.name}")
 
     # --------------------------------------------------------- comprobaciones
     sd = pd.DataFrame(stock_diario)

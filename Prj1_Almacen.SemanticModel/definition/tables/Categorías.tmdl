@@ -1,0 +1,52 @@
+/// Categorías de producto, en el orden de la leyenda, con sus colores: Color para barras y leyenda; Tono claro y Tono oscuro
+/// para las caras del palet en 3D. Sale de almacen.config.json (Categorias.csv).
+table Categorías
+	lineageTag: e994eff2-c01e-43aa-a4a6-34aebbfb6b04
+
+	column Categoría
+		dataType: string
+		lineageTag: 1119ea9f-bf03-4242-b041-ed787c312ffe
+		sourceColumn: Categoría
+		sortByColumn: Orden
+
+	column 'Nombre corto'
+		dataType: string
+		lineageTag: 39b07b97-d896-4a30-b8df-97817eed01e8
+		sourceColumn: Nombre corto
+
+	column Color
+		dataType: string
+		isHidden
+		lineageTag: f09a3311-866c-47ff-bde7-ceb9d971fa76
+		sourceColumn: Color
+
+	column 'Tono claro'
+		dataType: string
+		isHidden
+		lineageTag: 2399a893-dcf5-4dcc-8a66-3e8ca295198d
+		sourceColumn: Tono claro
+
+	column 'Tono oscuro'
+		dataType: string
+		isHidden
+		lineageTag: 6fa5e166-67e8-4728-bf66-5cbf077069e6
+		sourceColumn: Tono oscuro
+
+	column Orden
+		dataType: int64
+		isHidden
+		lineageTag: 085e39bf-38cb-4909-89f0-bab66458f78b
+		summarizeBy: none
+		sourceColumn: Orden
+
+	partition Categorías = m
+		mode: import
+		source =
+				let
+				    Origen = Csv.Document(File.Contents(CarpetaDatos & "Categorias.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
+				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"Categoría", type text}, {"Nombre corto", type text}, {"Color", type text}, {"Tono claro", type text}, {"Tono oscuro", type text}, {"Orden", Int64.Type}}, "en-US")
+				in
+				    Tipos
+

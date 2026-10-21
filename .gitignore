@@ -10,3 +10,6 @@ __pycache__/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Banco de pruebas de la escena (se genera con herramientas/banco.py)
+Prj1_Almacen/herramientas/banco.html

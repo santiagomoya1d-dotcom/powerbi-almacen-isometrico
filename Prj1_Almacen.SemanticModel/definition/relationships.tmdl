@@ -74,3 +74,7 @@ relationship 'Ocupación horaria_Pasillo_Pasillos_Pasillo'
 	fromColumn: 'Ocupación horaria'.Pasillo
 	toColumn: Pasillos.Pasillo
 
+relationship 04837991-b310-450b-8f89-eb1caf00bcee
+	fromColumn: Productos.Categoría
+	toColumn: Categorías.Categoría
+

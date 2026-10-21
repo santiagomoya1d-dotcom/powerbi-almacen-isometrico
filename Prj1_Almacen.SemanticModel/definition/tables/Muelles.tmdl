@@ -24,18 +24,6 @@ table Muelles
 		summarizeBy: none
 		sourceColumn: Orden
 
-	column X
-		dataType: double
-		lineageTag: 53a2d4ac-0c71-4541-abad-56b9cabbce7a
-		summarizeBy: none
-		sourceColumn: X
-
-	column Y
-		dataType: double
-		lineageTag: 7c91fa5f-97c6-4804-8f0a-a32596a287a9
-		summarizeBy: none
-		sourceColumn: Y
-
 	partition Muelles = m
 		mode: import
 		source =
@@ -43,7 +31,7 @@ table Muelles
 				    Origen = Csv.Document(File.Contents(CarpetaDatos & "Muelles.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
 				    Encabezados = Table.PromoteHeaders(Origen, [PromoteAllScalars = true]),
 				    SinVacios = Table.ReplaceValue(Encabezados, "", null, Replacer.ReplaceValue, Table.ColumnNames(Encabezados)),
-				    Tipos = Table.TransformColumnTypes(SinVacios, {{"MuelleID", type text}, {"Muelle", type text}, {"Tipo", type text}, {"Orden", Int64.Type}, {"X", type number}, {"Y", type number}}, "en-US")
+				    Tipos = Table.TransformColumnTypes(SinVacios, {{"MuelleID", type text}, {"Muelle", type text}, {"Tipo", type text}, {"Orden", Int64.Type}}, "en-US")
 				in
 				    Tipos
 

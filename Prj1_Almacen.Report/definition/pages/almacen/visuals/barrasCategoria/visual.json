@@ -20,13 +20,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Productos"
+                      "Entity": "Categorías"
                     }
                   },
                   "Property": "Categoría"
                 }
               },
-              "queryRef": "Productos.Categoría",
+              "queryRef": "Categorías.Categoría",
               "nativeQueryRef": "Categoría",
               "active": true
             }
@@ -78,8 +78,13 @@
               "solid": {
                 "color": {
                   "expr": {
-                    "Literal": {
-                      "Value": "'#38BDF8'"
+                    "Measure": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "Medidas"
+                        }
+                      },
+                      "Property": "Color de categoría"
                     }
                   }
                 }
@@ -89,271 +94,8 @@
           "selector": {
             "data": [
               {
-                "scopeId": {
-                  "Comparison": {
-                    "ComparisonKind": 0,
-                    "Left": {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Entity": "Productos"
-                          }
-                        },
-                        "Property": "Categoría"
-                      }
-                    },
-                    "Right": {
-                      "Literal": {
-                        "Value": "'Bebidas'"
-                      }
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#F59E0B'"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "scopeId": {
-                  "Comparison": {
-                    "ComparisonKind": 0,
-                    "Left": {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Entity": "Productos"
-                          }
-                        },
-                        "Property": "Categoría"
-                      }
-                    },
-                    "Right": {
-                      "Literal": {
-                        "Value": "'Alimentación'"
-                      }
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#22C55E'"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "scopeId": {
-                  "Comparison": {
-                    "ComparisonKind": 0,
-                    "Left": {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Entity": "Productos"
-                          }
-                        },
-                        "Property": "Categoría"
-                      }
-                    },
-                    "Right": {
-                      "Literal": {
-                        "Value": "'Droguería'"
-                      }
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#EC4899'"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "scopeId": {
-                  "Comparison": {
-                    "ComparisonKind": 0,
-                    "Left": {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Entity": "Productos"
-                          }
-                        },
-                        "Property": "Categoría"
-                      }
-                    },
-                    "Right": {
-                      "Literal": {
-                        "Value": "'Higiene y belleza'"
-                      }
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#F97316'"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "scopeId": {
-                  "Comparison": {
-                    "ComparisonKind": 0,
-                    "Left": {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Entity": "Productos"
-                          }
-                        },
-                        "Property": "Categoría"
-                      }
-                    },
-                    "Right": {
-                      "Literal": {
-                        "Value": "'Mascotas'"
-                      }
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#8B5CF6'"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "scopeId": {
-                  "Comparison": {
-                    "ComparisonKind": 0,
-                    "Left": {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Entity": "Productos"
-                          }
-                        },
-                        "Property": "Categoría"
-                      }
-                    },
-                    "Right": {
-                      "Literal": {
-                        "Value": "'Bazar y hogar'"
-                      }
-                    }
-                  }
-                }
-              }
-            ]
-          }
-        },
-        {
-          "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#EF4444'"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "scopeId": {
-                  "Comparison": {
-                    "ComparisonKind": 0,
-                    "Left": {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Entity": "Productos"
-                          }
-                        },
-                        "Property": "Categoría"
-                      }
-                    },
-                    "Right": {
-                      "Literal": {
-                        "Value": "'Temporada Navidad'"
-                      }
-                    }
-                  }
+                "dataViewWildcard": {
+                  "matchingOption": 1
                 }
               }
             ]

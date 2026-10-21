@@ -80,9 +80,9 @@ Por defecto abre el **16 de diciembre de 2025 a las 11:00**, el pico de la campa
 | Ocupación media / máxima | 70,9 % / 100 % (noviembre y diciembre) |
 | Nivel de servicio | 99,5 % de los palets pedidos servidos |
 | Puntualidad de camiones | 88,7 % con 15 minutos de retraso o menos |
-| Modelo | 18 tablas, 19 relaciones, 59 medidas DAX |
-| Código | unas 1.650 líneas de Python (simulador, escena 3D y generador de la página) |
-| Tiempo | una mañana de trabajo (20 de octubre de 2026) |
+| Modelo | 20 tablas, 20 relaciones, 61 medidas DAX |
+| Código | unas 2.800 líneas de Python (configuración, simulador, datos reales y comprobación, escena 3D, página y banco de pruebas) |
+| Tiempo | el informe, una mañana (20 de octubre de 2026); convertirlo en plantilla adaptable, otra (21 de octubre de 2026) |
 
 ## 6. Papel de la IA (para contarlo con honestidad)
 
@@ -103,7 +103,9 @@ Por defecto abre el **16 de diciembre de 2025 a las 11:00**, el pico de la campa
 - **«Un año de operación en una mañana»:** del dato simulado al informe terminado con IA como compañero.
 - **«El detalle que separa un concepto bonito de una herramienta usable»:** el modo corte para llegar a los pasillos interiores.
 - **«Informe como código»:** PBIP, TMDL y validación contra esquemas, versionable en Git y reproducible.
-- **Llamada a la acción:** el repositorio es público, para que cualquiera lo abra, lo pruebe y lo adapte.
+- **«Tu almacén en un archivo»:** es una plantilla. Filas, huecos, niveles, muelles y categorías se describen en `almacen.config.json` y una orden lo reconstruye todo: datos, escena 3D y página. Se probó con otra variante (10 filas, 5 categorías, 8 muelles) sin tocar una línea del modelo.
+- **«Pensado para que lo adapte otra IA»:** el repositorio trae una guía para agentes (`AGENTS.md`) y un contrato de datos para conectar un SGA real. Basta con pedirle a un agente «mi almacén tiene 10 filas».
+- **Llamada a la acción:** el repositorio es público, para que cualquiera lo abra, lo pruebe y lo adapte a su almacén.
 
 ## 8. Lo que no hay que afirmar
 
@@ -122,10 +124,14 @@ Por defecto abre el **16 de diciembre de 2025 a las 11:00**, el pico de la campa
 | `Prj1_Almacen/generador/generar_datos.py` | Simulador del año de operación (crea los CSV) |
 | `Prj1_Almacen/generador/pagina_almacen.py` | Escribe la página del informe en PBIR |
 | `Prj1_Almacen/deneb/construir_escena.py` | Genera la especificación Vega del almacén isométrico |
-| `Prj1_Almacen/datos/*.csv` | Los datos ficticios (14 tablas) |
+| `Prj1_Almacen/datos/*.csv` | Los datos ficticios (16 tablas) |
 | `Prj1_Almacen/informe/` | Tema oscuro y fondo de página diseñado en Figma |
 | `Prj1_Almacen/objetos-visuales/` | Deneb 2.0.1 y HTML Content 2.0.0 (standalone, MIT) |
-| `Prj1_Almacen/README.md` | Notas técnicas: cómo regenerarlo y qué hace cada medida clave |
+| `Prj1_Almacen/almacen.config.json` | La descripción del almacén: filas, huecos, niveles, muelles y categorías |
+| `Prj1_Almacen/construir.py` | Reconstruye datos, escena y página con una orden |
+| `Prj1_Almacen/CONTRATO_DE_DATOS.md` | Las tablas y columnas para usar datos reales de un SGA |
+| `AGENTS.md` | Guía para que un agente de IA adapte la plantilla: qué tocar, en qué orden y cómo comprobarlo |
+| `Prj1_Almacen/README.md` | Notas técnicas: cómo regenerarlo, cómo se adapta y qué hace cada medida clave |
 | `docs/captura-almacen.webp` | Captura de la página |
 
 **Para abrirlo hace falta:**

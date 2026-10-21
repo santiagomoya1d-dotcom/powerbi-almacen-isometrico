@@ -1,4 +1,5 @@
 /// Selector del modo corte del almacén isométrico: las filas que quedan delante de la elegida se dibujan transparentes.
+/// «Todo» y una ficha por cada fila de la tabla Pasillos, en su orden.
 table 'Fila en foco'
 	lineageTag: 09e6c67e-78e2-4c84-bef9-c27e0968d20b
 
@@ -23,5 +24,9 @@ table 'Fila en foco'
 
 	partition 'Fila en foco' = calculated
 		mode: import
-		source = DATATABLE ( "Fila", STRING, "Clave", STRING, "Orden", INTEGER, { { "Todo", "Todas", 0 }, { "A", "A", 1 }, { "B", "B", 2 }, { "C", "C", 3 }, { "D", "D", 4 }, { "E", "E", 5 }, { "F", "F", 6 }, { "G", "G", 7 }, { "H", "H", 8 } } )
+		source =
+				UNION (
+				    ROW ( "Fila", "Todo", "Clave", "Todas", "Orden", 0 ),
+				    SELECTCOLUMNS ( Pasillos, "Fila", Pasillos[Pasillo], "Clave", Pasillos[Pasillo], "Orden", Pasillos[Orden pasillo] )
+				)
 

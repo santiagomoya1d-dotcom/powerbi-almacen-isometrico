@@ -1,0 +1,8 @@
+Categoría,Nombre corto,Color,Tono claro,Tono oscuro,Orden
+Bebidas,Bebidas,#38BDF8,#93DDFD,#0284C7,1
+Alimentación,Alimentación,#F59E0B,#FCD38D,#B45309,2
+Droguería,Droguería,#22C55E,#9AF0B6,#15803D,3
+Higiene y belleza,Higiene,#EC4899,#F9B6D6,#BE185D,4
+Mascotas,Mascotas,#F97316,#FDC28E,#C2410C,5
+Bazar y hogar,Bazar,#8B5CF6,#C9BEFF,#6D28D9,6
+Temporada Navidad,Navidad,#EF4444,#FCA5A5,#B91C1C,7

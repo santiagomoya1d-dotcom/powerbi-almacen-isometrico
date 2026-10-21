@@ -1,6 +1,6 @@
 {
  "$schema": "https://vega.github.io/schema/vega/v5.json",
- "description": "Almacén isométrico CD-01 (datos ficticios). Generado por deneb/construir_escena.py: no editar a mano.",
+ "description": "Almacén CD-01: almacén isométrico. Generado por deneb/construir_escena.py a partir de almacen.config.json: no editar a mano.",
  "background": "transparent",
  "padding": 0,
  "autosize": "none",
@@ -32,6 +32,10 @@
   {
    "name": "nSalida",
    "update": "length(data('dataset')) ? min(36, data('dataset')[0]['Salidas en la hora'] || 0) : 0"
+  },
+  {
+   "name": "paletaCat",
+   "update": "length(data('dataset')) && data('dataset')[0]['Paleta de categorías'] ? data('dataset')[0]['Paleta de categorías'] : ''"
   },
   {
    "name": "foco",
@@ -110,6 +114,38 @@
      "y0": 19.9,
      "banda": 8,
      "lado": "pos"
+    }
+   ]
+  },
+  {
+   "name": "categorias",
+   "values": [
+    {}
+   ],
+   "transform": [
+    {
+     "type": "formula",
+     "as": "lista",
+     "expr": "paletaCat ? split(paletaCat, '|') : []"
+    },
+    {
+     "type": "flatten",
+     "fields": [
+      "lista"
+     ],
+     "as": [
+      "item"
+     ]
+    },
+    {
+     "type": "formula",
+     "as": "tonos",
+     "expr": "split(substring(datum.item, 0, 23), ',')"
+    },
+    {
+     "type": "formula",
+     "as": "categoria",
+     "expr": "substring(datum.item, 23)"
     }
    ]
   },
@@ -275,6 +311,20 @@
      ]
     },
     {
+     "type": "lookup",
+     "from": "categorias",
+     "key": "categoria",
+     "fields": [
+      "categoria"
+     ],
+     "values": [
+      "tonos"
+     ],
+     "as": [
+      "tonosCat"
+     ]
+    },
+    {
      "type": "formula",
      "as": "alto",
      "expr": "(datum.clase == 'A' ? 0.7 : datum.clase == 'B' ? 0.63 : 0.56) - ((datum.Hueco * 7 + datum.pos * 13 + datum.Nivel * 5) % 4) * 0.025"
@@ -282,7 +332,7 @@
     {
      "type": "formula",
      "as": "tono",
-     "expr": "modo == 'dias' ? (datum.dias < 7 ? ['#7AF0DC', '#2BC8B2', '#159A89'] : datum.dias <= 21 ? ['#FDE68A', '#FBBF24', '#C98A0B'] : ['#FDA4AF', '#F43F5E', '#BE123C']) : modo == 'categoria' ? (datum.categoria == 'Bebidas' ? ['#93DDFD', '#38BDF8', '#0284C7'] : datum.categoria == 'Alimentación' ? ['#FCD38D', '#F59E0B', '#B45309'] : datum.categoria == 'Droguería' ? ['#9AF0B6', '#22C55E', '#15803D'] : datum.categoria == 'Higiene y belleza' ? ['#F9B6D6', '#EC4899', '#BE185D'] : datum.categoria == 'Mascotas' ? ['#FDC28E', '#F97316', '#C2410C'] : datum.categoria == 'Bazar y hogar' ? ['#C9BEFF', '#8B5CF6', '#6D28D9'] : ['#FCA5A5', '#EF4444', '#B91C1C']) : (datum.clase == 'A' ? ['#7AF0DC', '#2BC8B2', '#159A89'] : datum.clase == 'B' ? ['#B4C0FF', '#7C8CF6', '#5865D6'] : ['#F3B5FF', '#D57BEA', '#A855C7'])"
+     "expr": "modo == 'dias' ? (datum.dias < 7 ? ['#7AF0DC', '#2BC8B2', '#159A89'] : datum.dias <= 21 ? ['#FDE68A', '#FBBF24', '#C98A0B'] : ['#FDA4AF', '#F43F5E', '#BE123C']) : modo == 'categoria' ? (datum.tonosCat || ['#94A3B8', '#64748B', '#475569']) : (datum.clase == 'A' ? ['#7AF0DC', '#2BC8B2', '#159A89'] : datum.clase == 'B' ? ['#B4C0FF', '#7C8CF6', '#5865D6'] : ['#F3B5FF', '#D57BEA', '#A855C7'])"
     },
     {
      "type": "formula",
@@ -454,7 +504,7 @@
     {
      "type": "formula",
      "as": "j",
-     "expr": "datum.i % 36"
+     "expr": "datum.entrada ? datum.i : datum.i - 36"
     },
     {
      "type": "filter",
@@ -463,12 +513,12 @@
     {
      "type": "formula",
      "as": "carril",
-     "expr": "datum.j % 6"
+     "expr": "datum.j % (datum.entrada ? 6 : 6)"
     },
     {
      "type": "formula",
      "as": "hueco",
-     "expr": "floor(datum.j / 6)"
+     "expr": "floor(datum.j / (datum.entrada ? 6 : 6))"
     },
     {
      "type": "formula",
@@ -483,7 +533,7 @@
     {
      "type": "formula",
      "as": "clave",
-     "expr": "(datum.entrada ? 'E' : 'S') + (datum.carril + 1)"
+     "expr": "datum.entrada ? ['E1', 'E2', 'E3', 'E4', 'E5', 'E6'][datum.carril] : ['S1', 'S2', 'S3', 'S4', 'S5', 'S6'][datum.carril]"
     },
     {
      "type": "lookup",
@@ -679,14 +729,14 @@
       2.5
      ],
      "py": [
-      2.35,
-      2.35,
-      5.2,
-      5.2
+      18.4,
+      18.4,
+      21.25,
+      21.25
      ],
      "n": 4,
      "z": 0.0,
-     "fill": "#2A1F45",
+     "fill": "#0E3B44",
      "op": 0.55,
      "st": null,
      "sw": 0.0,
@@ -723,14 +773,14 @@
       2.5
      ],
      "py": [
-      18.4,
-      18.4,
-      21.25,
-      21.25
+      2.35,
+      2.35,
+      5.2,
+      5.2
      ],
      "n": 4,
      "z": 0.0,
-     "fill": "#0E3B44",
+     "fill": "#2A1F45",
      "op": 0.55,
      "st": null,
      "sw": 0.0,
