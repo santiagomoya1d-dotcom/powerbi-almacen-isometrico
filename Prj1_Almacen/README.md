@@ -21,7 +21,6 @@ Piezas que generan el informe `../Prj1_Almacen.pbip`. **Todos los datos son fict
 | `herramientas/validar_pbir.py` | Valida el informe contra los esquemas JSON públicos de Microsoft. |
 | `ejemplos/` | Otra configuración (10 filas, 5 categorías, 3+5 muelles) para probar la plantilla. |
 | `informe/` | Tema oscuro (`TemaAlmacenOscuro.json`) y fondo de página (`FondoAlmacen.png`), diseñado en Figma. |
-| `objetos-visuales/` | Deneb 2.0.1 y HTML Content 2.0.0, versiones «standalone» oficiales (licencia MIT, ver `LICENCIAS-TERCEROS.md`). |
 | `BRIEFING_LINKEDIN.md` | Contexto del proyecto para redactar la publicación. |
 
 ## Regenerar

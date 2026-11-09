@@ -113,7 +113,8 @@ Por defecto abre el **16 de diciembre de 2025 a las 11:00**, el pico de la campa
 - **No es un sistema conectado en tiempo real.** «Gemelo digital» se usa en sentido de simulación: el informe reproduce un año simulado, no lee un almacén real.
 - **No es 3D real ni un motor de videojuego.** Es una proyección isométrica dibujada con Vega dentro de Power BI. Se puede decir «vista 3D isométrica».
 - **Sin promesas de rendimiento ni de escala** que no se hayan medido.
-- **Deneb y HTML Content son objetos visuales de terceros, con licencia MIT.** Se usan sus versiones «standalone» oficiales, importadas desde archivo.
+- **Deneb y HTML Content son objetos visuales de terceros, con licencia MIT.** Se usan sus ediciones certificadas por Microsoft (Deneb y HTML Content Secure), que Power BI descarga de AppSource.
+- **Lo certificado son los dos objetos visuales, no el informe.** No digas que Microsoft certificó el proyecto.
 
 ## 9. Contenido del repositorio
 
@@ -126,7 +127,6 @@ Por defecto abre el **16 de diciembre de 2025 a las 11:00**, el pico de la campa
 | `Prj1_Almacen/deneb/construir_escena.py` | Genera la especificación Vega del almacén isométrico |
 | `Prj1_Almacen/datos/*.csv` | Los datos ficticios (16 tablas) |
 | `Prj1_Almacen/informe/` | Tema oscuro y fondo de página diseñado en Figma |
-| `Prj1_Almacen/objetos-visuales/` | Deneb 2.0.1 y HTML Content 2.0.0 (standalone, MIT) |
 | `Prj1_Almacen/almacen.config.json` | La descripción del almacén: filas, huecos, niveles, muelles y categorías |
 | `Prj1_Almacen/construir.py` | Reconstruye datos, escena y página con una orden |
 | `Prj1_Almacen/CONTRATO_DE_DATOS.md` | Las tablas y columnas para usar datos reales de un SGA |
@@ -137,7 +137,7 @@ Por defecto abre el **16 de diciembre de 2025 a las 11:00**, el pico de la campa
 **Para abrirlo hace falta:**
 - Power BI Desktop de agosto de 2026 o posterior;
 - apuntar el parámetro `CarpetaDatos` a la carpeta `Prj1_Almacen/datos/` y pulsar «Actualizar» (el repositorio no incluye la caché de datos);
-- los objetos visuales ya van incrustados en el informe. Si no aparecen, se importan desde `Prj1_Almacen/objetos-visuales/`.
+- conexión a internet al abrirlo: Power BI descarga de AppSource los dos objetos visuales, ambos certificados.
 
 El diseño se hizo en Figma (archivo «Almacén CD-01 · Power BI», no público).
 

@@ -6,8 +6,9 @@ Uso:     python pagina_almacen.py            (busca Prj1_Almacen.Report en la ra
          python pagina_almacen.py [--config otra.config.json] [--proyecto "<carpeta con Prj1_Almacen.Report>"]
 Después: en Power BI Desktop, «Aplicar cambios externos» (o cerrar y abrir el .pbip).
 
-Lee de los archivos que ya guardó Power BI las versiones de esquema y los identificadores de
-Deneb y HTML Content, para escribir lo mismo que escribiría Desktop. De almacen.config.json toma
+Lee de los archivos que ya guardó Power BI las versiones de esquema, para escribir lo mismo que escribiría
+Desktop. Deneb y HTML Content son las ediciones certificadas de AppSource: el informe solo las nombra
+(publicCustomVisuals en report.json) y Power BI las descarga al abrirlo. De almacen.config.json toma
 las horas del selector, la hora por defecto y el número de filas del selector de modo corte.
 """
 from __future__ import annotations
@@ -33,6 +34,9 @@ TEMA = "TemaAlmacenOscuro.json"
 FONDO = "FondoAlmacen.png"
 
 ESQ = "https://developer.microsoft.com/json-schemas/fabric/item/report/definition"
+# Objetos visuales certificados de AppSource (funcionan donde el administrador solo admite visuales certificados).
+DENEB = "deneb7E15AEF80B9E4D4F8E12924291ECE89A"            # Deneb
+HTML = "htmlContent443BE3AD55E043BF878BED274D3A6865"        # HTML Content Secure, la edición certificada (antes «lite»)
 
 
 def leer(p: Path):
@@ -123,21 +127,6 @@ def filtro_in(tabla: str, campo: str, valor_literal: str):
 
 
 # --------------------------------------------------------------- objetos visuales
-def identificador(nombre: str) -> str:
-    """GUID del objeto visual (de AppSource o importado desde archivo, p. ej. STANDALONEdeneb…)."""
-    rep = DEF / "report.json"
-    ids = list(leer(rep).get("publicCustomVisuals", [])) if rep.exists() else []
-    if rep.exists():
-        for paquete in leer(rep).get("resourcePackages", []):
-            ids += [paquete.get("name", "")] + [i.get("name", "") for i in paquete.get("items", [])]
-    ids += [leer(f).get("visual", {}).get("visualType", "") for f in DEF.rglob("visual.json")]
-    ids += [c.name for c in (INFORME / "CustomVisuals").glob("*")] if (INFORME / "CustomVisuals").exists() else []
-    for i in ids:
-        if nombre.lower() in i.lower():
-            return i
-    raise SystemExit(f"No encuentro el objeto visual {nombre} en el informe: impórtalo y guarda.")
-
-
 def html(nombre, x, y, ancho, alto, z, medida, guid):
     return visual(nombre, x, y, ancho, alto, z, {
         "visualType": guid,
@@ -304,13 +293,20 @@ def registrar_tema() -> None:
     # Fondo de página diseñado en Figma (archivo «Almacén CD-01 · Power BI»)
     shutil.copyfile(RAIZ / "informe" / FONDO, destino.parent / FONDO)
     reg["items"].append({"name": FONDO, "path": FONDO, "type": "Image"})
-    escribir(rep_path, rep)
+    # Deneb y HTML Content, como visuales públicos de AppSource (Desktop los escribe justo antes de resourcePackages)
+    publicos = [v for v in rep.get("publicCustomVisuals", []) if v not in (DENEB, HTML)] + [DENEB, HTML]
+    ordenado = {}
+    for clave, valor in rep.items():
+        if clave == "resourcePackages":
+            ordenado["publicCustomVisuals"] = publicos
+        if clave != "publicCustomVisuals":
+            ordenado[clave] = valor
+    escribir(rep_path, ordenado)
 
 
 # --------------------------------------------------------------------- página
 def main() -> None:
-    g_deneb = identificador("deneb")
-    g_html = identificador("htmlContent")
+    g_deneb, g_html = DENEB, HTML
     ruta_escena = Path(ARGS.escena) if ARGS.escena else RAIZ / "deneb" / "almacen_isometrico.vega.json"
     spec = ruta_escena.read_text(encoding="utf-8")
     spec = json.dumps(json.loads(spec), ensure_ascii=False, separators=(",", ":"))

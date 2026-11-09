@@ -37,7 +37,6 @@ Prj1_Almacen/
     validar_pbir.py                   valida el informe contra los esquemas JSON de Microsoft
   ejemplos/almacen-10-filas.config.json   otra configuración de ejemplo
   informe/                            tema y fondo (fuente; se copian al informe)
-  objetos-visuales/                   Deneb y HTML Content (.pbiviz)
 ```
 
 ## Requisitos
@@ -80,10 +79,16 @@ Todas terminan igual: `python construir.py` (o la variante que se indica) y, en 
 - **Stock por reconstrucción.** `Palets en stock` suma `Movimientos[Signo]` hasta el momento elegido. Si un hueco llega a tener dos palets a la vez en los datos, el 3D lo pinta mal; `comprobar_datos.py` lo detecta.
 - **Semilla fija.** Con la configuración de serie, `generar_datos.py` produce siempre los mismos CSV, byte a byte. Si cambias el simulador y quieres conservar el año publicado, compara `datos/` antes y después.
 - **Saltos de línea.** Los `.py`, `.md` y `.json` de `Prj1_Almacen/` usan LF; los CSV, el `.vega.json` y los TMDL usan CRLF, como los escribe Power BI. Respétalo para no ensuciar los diffs.
+- **Objetos visuales certificados.**
+  - Son Deneb (`deneb7E15AEF80B9E4D4F8E12924291ECE89A`) y HTML Content Secure (`htmlContent443BE3AD55E043BF878BED274D3A6865`), de AppSource.
+  - El informe solo los nombra en `report.json` (`publicCustomVisuals`), y Power BI los descarga al abrirlo. `pagina_almacen.py` los escribe y los registra.
+  - HTML Content Secure limpia el HTML antes de pintarlo. Solo pasan las etiquetas y los atributos de su lista; quita las `url()` externas, `attr()`, los scripts, los atributos `on…` y los recursos remotos. Las reglas están en su [documentación](https://github.com/dm-p/powerbi-visuals-html-content/blob/main/docs/sanitization-rules.md).
+  - Deneb certificado no carga nada de internet: la escena y los datos van dentro de la especificación.
 - **Power BI Desktop.** Si el modelo se cambia con el servidor MCP mientras Desktop está abierto, después hay que llevar los cambios a los TMDL: exporta con `ExportToTmdlFolder` y copia los archivos que difieran, salvo `database.tmdl`. Si Desktop guarda después de que hayas escrito la página, la pisa: vuelve a lanzar `pagina_almacen.py`.
 
 ## Lo que no hay que hacer
 
 - No metas datos reales de nadie en el repositorio público. Los de serie son ficticios y así se declaran (`almacen.datos_ficticios`).
 - No subas `.pbi/localSettings.json` ni `.pbi/cache.abf`: están en `.gitignore`.
-- No cambies los identificadores de los objetos visuales ni las versiones de esquema a mano: `pagina_almacen.py` los lee de lo que guardó Desktop.
+- No cambies las versiones de esquema a mano: `pagina_almacen.py` las lee de lo que guardó Desktop.
+- No importes las versiones standalone de Deneb ni la edición normal de HTML Content: cambian el identificador del visual y no están certificadas.

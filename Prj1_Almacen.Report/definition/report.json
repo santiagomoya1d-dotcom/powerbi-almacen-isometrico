@@ -48,6 +48,10 @@
       }
     ]
   },
+  "publicCustomVisuals": [
+    "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+    "htmlContent443BE3AD55E043BF878BED274D3A6865"
+  ],
   "resourcePackages": [
     {
       "name": "SharedResources",
@@ -57,28 +61,6 @@
           "name": "Fluent2-CY26SU09",
           "path": "BaseThemes/Fluent2-CY26SU09.json",
           "type": "BaseTheme"
-        }
-      ]
-    },
-    {
-      "name": "STANDALONEdeneb7E15AEF80B9E4D4F8E12924291ECE89A",
-      "type": "CustomVisual",
-      "items": [
-        {
-          "name": "STANDALONEdeneb7E15AEF80B9E4D4F8E12924291ECE89A.pbiviz.json",
-          "path": "STANDALONEdeneb7E15AEF80B9E4D4F8E12924291ECE89A.pbiviz.json",
-          "type": "CustomVisualMetadata"
-        }
-      ]
-    },
-    {
-      "name": "STANDALONEhtmlContent443BE3AD55E043BF878BED274D3A6855",
-      "type": "CustomVisual",
-      "items": [
-        {
-          "name": "STANDALONEhtmlContent443BE3AD55E043BF878BED274D3A6855.pbiviz.json",
-          "path": "STANDALONEhtmlContent443BE3AD55E043BF878BED274D3A6855.pbiviz.json",
-          "type": "CustomVisualMetadata"
         }
       ]
     },
